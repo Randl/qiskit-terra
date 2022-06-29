@@ -14,7 +14,7 @@
 
 import copy
 import datetime
-from typing import Any, Iterable, Tuple, Union
+from typing import Any, Iterable, Tuple, Union, Dict, List
 import dateutil.parser
 
 from qiskit.providers.exceptions import BackendPropertyError
@@ -31,7 +31,7 @@ class Nduv:
         value: value.
     """
 
-    def __init__(self, date, name, unit, value):
+    def __init__(self, date, name: str, unit: str, value):
         """Initialize a new name-date-unit-value object
 
         Args:
@@ -94,7 +94,7 @@ class Gate:
 
     _data = {}
 
-    def __init__(self, qubits, gate, parameters, **kwargs):
+    def __init__(self, qubits, gate: str, parameters: List[Nduv], **kwargs):
         """Initialize a new Gate object
 
         Args:
@@ -167,7 +167,14 @@ class BackendProperties:
     _data = {}
 
     def __init__(
-        self, backend_name, backend_version, last_update_date, qubits, gates, general, **kwargs
+        self,
+        backend_name,
+        backend_version,
+        last_update_date,
+        qubits,
+        gates: List[Gate],
+        general,
+        **kwargs,
     ):
         """Initialize a BackendProperties instance.
 
@@ -202,7 +209,7 @@ class BackendProperties:
                 formatted_props[prop.name] = (value, prop.date)
                 self._qubits[qubit] = formatted_props
 
-        self._gates = {}
+        self._gates: Dict[str, Dict[Tuple, Dict[str, Tuple]]] = {}
         for gate in gates:
             if gate.gate not in self._gates:
                 self._gates[gate.gate] = {}
@@ -278,7 +285,7 @@ class BackendProperties:
 
     def gate_property(
         self, gate: str, qubits: Union[int, Iterable[int]] = None, name: str = None
-    ) -> Tuple[Any, datetime.datetime]:
+    ) -> Union[Tuple[Any, datetime.datetime], Dict[str, Tuple]]:
         """
         Return the property of the given gate.
 
@@ -367,7 +374,9 @@ class BackendProperties:
         """
         return self.gate_property(gate, qubits, "gate_length")[0]  # Throw away datetime at index 1
 
-    def qubit_property(self, qubit: int, name: str = None) -> Tuple[Any, datetime.datetime]:
+    def qubit_property(
+        self, qubit: int, name: str = None
+    ) -> Union[Tuple[Any, datetime.datetime], Dict[str, Tuple]]:
         """
         Return the property of the given qubit.
 
