@@ -51,7 +51,7 @@ def get_measured_qubits(
         QiskitError: invalid qubit mapping
     """
     qubit_index = None
-    qubit_mappings = {}
+    qubit_mappings: Dict[str, List[int]] = {}
     for idx, qc in enumerate(transpiled_circuits):
         measured_qubits = []
         for instruction in qc.data:
@@ -98,7 +98,7 @@ def get_measured_qubits_from_qobj(qobj: QasmQobj) -> Tuple[List[int], Dict[str, 
     """
 
     qubit_index = None
-    qubit_mappings = {}
+    qubit_mappings: Dict[str, List[int]] = {}
 
     for idx, exp in enumerate(qobj.experiments):
         measured_qubits = []

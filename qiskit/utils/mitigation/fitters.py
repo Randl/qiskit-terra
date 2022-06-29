@@ -18,7 +18,7 @@
 """
 Measurement correction fitters.
 """
-from typing import List
+from typing import List, Any, Dict, Optional, Sequence
 import copy
 import re
 
@@ -43,7 +43,7 @@ class CompleteMeasFitter:
         self,
         results,
         state_labels: List[str],
-        qubit_list: List[int] = None,
+        qubit_list: Optional[Sequence[int]] = None,
         circlabel: str = "",
     ):
         """
@@ -94,15 +94,15 @@ class CompleteMeasFitter:
         """Return state_labels."""
         return self._tens_fitt.substate_labels_list[0]
 
-    @property
-    def qubit_list(self):
-        """Return list of qubits."""
-        return self._qubit_list
-
     @state_labels.setter
     def state_labels(self, new_state_labels):
         """Set state label."""
         self._tens_fitt.substate_labels_list[0] = new_state_labels
+
+    @property
+    def qubit_list(self):
+        """Return list of qubits."""
+        return self._qubit_list
 
     @property
     def filter(self):
@@ -226,7 +226,7 @@ class TensoredMeasFitter:
     def __init__(
         self,
         results,
-        mit_pattern: List[List[int]],
+        mit_pattern: List[Sequence[int]],
         substate_labels_list: List[List[str]] = None,
         circlabel: str = "",
     ):
@@ -263,14 +263,14 @@ class TensoredMeasFitter:
                 substate_labels_list
         """
 
-        self._result_list = []
+        self._result_list: List[Any] = []
         self._cal_matrices = None
         self._circlabel = circlabel
         self._mit_pattern = mit_pattern
 
         self._qubit_list_sizes = [len(qubit_list) for qubit_list in mit_pattern]
 
-        self._indices_list = []
+        self._indices_list: List[Dict[Any, Any]] = []
         if substate_labels_list is None:
             self._substate_labels_list = []
             for list_size in self._qubit_list_sizes:

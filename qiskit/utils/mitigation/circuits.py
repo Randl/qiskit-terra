@@ -18,7 +18,7 @@
 Measurement calibration circuits. To apply the measurement mitigation
 use the fitters to produce a filter.
 """
-from typing import List, Tuple, Union
+from typing import List, Tuple, Union, Any, Optional, Collection
 from qiskit.utils.deprecation import deprecate_func
 
 
@@ -45,11 +45,11 @@ def count_keys(num_qubits: int) -> List[str]:
     additional_msg="For code migration guidelines, visit https://qisk.it/qi_migration.",
 )
 def complete_meas_cal(
-    qubit_list: List[int] = None,
-    qr: Union[int, List["QuantumRegister"]] = None,
-    cr: Union[int, List["ClassicalRegister"]] = None,
+    qubit_list: Optional[List[int]] = None,
+    qr: Optional[Union[int, List[Any]]] = None,
+    cr: Optional[Union[int, List[Any]]] = None,
     circlabel: str = "",
-) -> Tuple[List["QuantumCircuit"], List[str]]:
+) -> Tuple[List[Any], List[str]]:
     """
     Deprecated: Return a list of measurement calibration circuits for the full
     Hilbert space.
@@ -126,11 +126,11 @@ def complete_meas_cal(
     additional_msg="For code migration guidelines, visit https://qisk.it/qi_migration.",
 )
 def tensored_meas_cal(
-    mit_pattern: List[List[int]] = None,
-    qr: Union[int, List["QuantumRegister"]] = None,
-    cr: Union[int, List["ClassicalRegister"]] = None,
+    mit_pattern: Optional[List[List[int]]] = None,
+    qr: Optional[Union[int, Collection[Any]]] = None,
+    cr: Optional[Union[int, Collection[Any]]] = None,
     circlabel: str = "",
-) -> Tuple[List["QuantumCircuit"], List[List[int]]]:
+) -> Tuple[List[Any], List[List[int]]]:
     """
     Deprecated: Return a list of calibration circuits
 
@@ -166,7 +166,7 @@ def tensored_meas_cal(
         QiskitError: if a qubit appears more than once in `mit_pattern`.
 
     """
-    # Runtime imports to avoid circular imports causeed by QuantumInstance
+    # Runtime imports to avoid circular imports caused by QuantumInstance
     # getting initialized by imported utils/__init__ which is imported
     # by qiskit.circuit
     from qiskit.circuit.quantumregister import QuantumRegister

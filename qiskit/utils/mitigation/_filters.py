@@ -21,8 +21,8 @@
 Measurement correction filters.
 
 """
-
-from typing import List
+from __future__ import annotations
+from typing import List, Dict, Any
 from copy import deepcopy
 
 import numpy as np
@@ -65,6 +65,11 @@ class MeasurementFilter:
         """Return cal_matrix."""
         return self._cal_matrix
 
+    @cal_matrix.setter
+    def cal_matrix(self, new_cal_matrix):
+        """Set cal_matrix."""
+        self._cal_matrix = new_cal_matrix
+
     @property
     def state_labels(self):
         """return the state label ordering of the cal matrix"""
@@ -74,11 +79,6 @@ class MeasurementFilter:
     def state_labels(self, new_state_labels):
         """set the state label ordering of the cal matrix"""
         self._state_labels = new_state_labels
-
-    @cal_matrix.setter
-    def cal_matrix(self, new_cal_matrix):
-        """Set cal_matrix."""
-        self._cal_matrix = new_cal_matrix
 
     def apply(self, raw_data, method="least_squares"):
         """Apply the calibration matrix to results.
@@ -229,7 +229,7 @@ class TensoredFilter:
         since="0.24.0",
         additional_msg="For code migration guidelines, visit https://qisk.it/qi_migration.",
     )
-    def __init__(self, cal_matrices: np.matrix, substate_labels_list: list, mit_pattern: list):
+    def __init__(self, cal_matrices: np.matrix, substate_labels_list: list[str], mit_pattern: list):
         """
         Initialize a tensored measurement error mitigation filter using
         the cal_matrices from a tensored measurement calibration fitter.
@@ -245,9 +245,9 @@ class TensoredFilter:
         """
 
         self._cal_matrices = cal_matrices
-        self._qubit_list_sizes = []
-        self._indices_list = []
-        self._substate_labels_list = []
+        self._qubit_list_sizes: List[int] = []
+        self._indices_list: List[Dict[Any, Any]] = []
+        self._substate_labels_list: List[str] = []
         self.substate_labels_list = substate_labels_list
         self._mit_pattern = mit_pattern
 
