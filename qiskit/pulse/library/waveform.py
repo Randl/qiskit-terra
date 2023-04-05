@@ -113,7 +113,9 @@ class Waveform(Pulse):
         """Return a dictionary containing the pulse's parameters."""
         return {}
 
-    def __eq__(self, other: Pulse) -> bool:
+    def __eq__(self, other: object) -> bool:
+        if not isinstance(other, Waveform):
+            return NotImplemented
         return (
             super().__eq__(other)
             and self.samples.shape == other.samples.shape
