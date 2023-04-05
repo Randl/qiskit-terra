@@ -14,6 +14,8 @@
 
 from __future__ import annotations
 
+import typing
+
 import numpy as np
 
 from qiskit.circuit.gate import Gate
@@ -21,6 +23,10 @@ from qiskit.circuit.gate import Gate
 from .gate_sequence import GateSequence
 from .commutator_decompose import commutator_decompose
 from .generate_basis_approximations import generate_basic_approximations, _1q_gates, _1q_inverses
+
+if typing.TYPE_CHECKING:
+    from ... import QuantumCircuit
+    from ...dagcircuit import DAGCircuit
 
 
 class SolovayKitaevDecomposition:
@@ -91,7 +97,7 @@ class SolovayKitaevDecomposition:
         recursion_degree: int,
         return_dag: bool = False,
         check_input: bool = True,
-    ) -> "QuantumCircuit" | "DAGCircuit":
+    ) -> QuantumCircuit | DAGCircuit:
         r"""Run the algorithm.
 
         Args:

@@ -311,7 +311,7 @@ class PulseQobjDef(ScheduleDef):
 
         self._converter = converter or QobjToInstructionConverter(pulse_library=[])
         self._name = name
-        self._source = None
+        self._source: list[PulseQobjInstruction] | None = None
 
     def _build_schedule(self):
         """Build pulse schedule from cmd-def sequence."""

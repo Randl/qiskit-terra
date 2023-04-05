@@ -1001,7 +1001,9 @@ class QuantumCircuit:
             # adjust new instrs before original ones and update all parameters
             mapped_instrs += dest.data
             dest.clear()
-        append = dest._control_flow_scopes[-1].append if dest._control_flow_scopes else dest._append
+        append: Callable[[CircuitInstruction], CircuitInstruction] | Callable[
+            [CircuitInstruction | Instruction], CircuitInstruction | Instruction
+        ] = (dest._control_flow_scopes[-1].append if dest._control_flow_scopes else dest._append)
         for instr in mapped_instrs:
             append(instr)
 
@@ -1347,7 +1349,7 @@ class QuantumCircuit:
         instruction: CircuitInstruction | Instruction,
         qargs: Sequence[Qubit] | None = None,
         cargs: Sequence[Clbit] | None = None,
-    ):
+    ) -> CircuitInstruction | Instruction:
         """Append an instruction to the end of the circuit, modifying the circuit in place.
 
         .. warning::

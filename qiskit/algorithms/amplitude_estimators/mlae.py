@@ -164,7 +164,7 @@ class MaximumLikelihoodAmplitudeEstimation(AmplitudeEstimator):
         """
         if isinstance(quantum_instance, Backend):
             quantum_instance = QuantumInstance(quantum_instance)
-        self._quantum_instance = quantum_instance
+        self._quantum_instance: QuantumInstance = quantum_instance
 
     def construct_circuits(
         self, estimation_problem: EstimationProblem, measurement: bool = False

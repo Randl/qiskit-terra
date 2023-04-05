@@ -89,7 +89,7 @@ Arbitrary generator function satisfying the above format can be accepted.
 Returned `ElementaryData` can be arbitrary subclasses that are implemented in
 the plotter API.
 """
-
+from __future__ import annotations
 import warnings
 
 from typing import List, Union, Dict, Any
@@ -183,7 +183,7 @@ def gen_sched_gate(
             data_type=types.SymbolType.FRAME,
             bit=gate.bits[gate.bit_position],
             xval=gate.t0,
-            yval=0,
+            yval=0.0,
             text=unicode_symbol,
             latex=latex_symbol,
             styles=styles,

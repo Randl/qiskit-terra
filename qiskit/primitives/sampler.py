@@ -61,8 +61,8 @@ class Sampler(BaseSampler[PrimitiveJob[SamplerResult]]):
             QiskitError: if some classical bits are not used for measurements.
         """
         super().__init__(options=options)
-        self._qargs_list = []
-        self._circuit_ids = {}
+        self._qargs_list: list[list[int]] = []
+        self._circuit_ids: dict[tuple, int] = {}
 
     def _call(
         self,
@@ -138,7 +138,7 @@ class Sampler(BaseSampler[PrimitiveJob[SamplerResult]]):
         return job
 
     @staticmethod
-    def _preprocess_circuit(circuit: QuantumCircuit):
+    def _preprocess_circuit(circuit: QuantumCircuit) -> tuple[QuantumCircuit, list[int]]:
         circuit = init_circuit(circuit)
         q_c_mapping = final_measurement_mapping(circuit)
         if set(range(circuit.num_clbits)) != set(q_c_mapping.values()):

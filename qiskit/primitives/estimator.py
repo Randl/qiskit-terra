@@ -64,8 +64,8 @@ class Estimator(BaseEstimator[PrimitiveJob[EstimatorResult]]):
             QiskitError: if some classical bits are not used for measurements.
         """
         super().__init__(options=options)
-        self._circuit_ids = {}
-        self._observable_ids = {}
+        self._circuit_ids: dict[tuple, int] = {}
+        self._observable_ids: dict[tuple, int] = {}
 
     def _call(
         self,

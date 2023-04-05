@@ -11,7 +11,7 @@
 # that they have been altered from the originals.
 
 """run circuits functions"""
-
+from __future__ import annotations
 from typing import Optional, Dict, Callable, List, Union, Tuple
 import sys
 import logging
@@ -59,7 +59,7 @@ def find_regs_by_name(
 
     """
     found_reg = None
-    regs = circuit.qregs if qreg else circuit.cregs
+    regs: list[QuantumRegister] | list[ClassicalRegister] = circuit.qregs if qreg else circuit.cregs
     for reg in regs:
         if reg.name == name:
             found_reg = reg

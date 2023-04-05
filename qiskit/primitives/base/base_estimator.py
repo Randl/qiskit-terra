@@ -121,9 +121,9 @@ class BaseEstimator(BasePrimitive, Generic[T]):
         Args:
             options: Default options.
         """
-        self._circuits = []
-        self._observables = []
-        self._parameters = []
+        self._circuits: list[QuantumCircuit] = []
+        self._observables: list[SparsePauliOp] = []
+        self._parameters: list[ParameterView] = []
         super().__init__(options)
 
     def run(

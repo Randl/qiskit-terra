@@ -17,7 +17,7 @@ from __future__ import annotations
 import functools
 import inspect
 import warnings
-from typing import Any, Callable, Dict, Optional, Type, Tuple, Union
+from typing import Any, Callable, Dict, Optional, Type
 
 
 def deprecate_func(
@@ -353,9 +353,9 @@ def _write_deprecation_msg(
     pending: bool,
     additional_msg: str,
     removal_timeline: str,
-) -> Tuple[str, Union[Type[DeprecationWarning], Type[PendingDeprecationWarning]]]:
+) -> tuple[str, Type[DeprecationWarning] | Type[PendingDeprecationWarning]]:
     if pending:
-        category = PendingDeprecationWarning
+        category: Type[DeprecationWarning] | Type[PendingDeprecationWarning] = PendingDeprecationWarning
         deprecation_status = "pending deprecation"
         removal_desc = f"marked deprecated in a future release, and then removed {removal_timeline}"
     else:

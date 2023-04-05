@@ -11,12 +11,13 @@
 # that they have been altered from the originals.
 
 """Code from commutative_analysis pass that checks commutation relations between DAG nodes."""
-
+from __future__ import annotations
+from collections.abc import Iterable
 from functools import lru_cache
-from typing import List
 import numpy as np
 
 from qiskit.circuit.operation import Operation
+from qiskit.circuit.quantumcircuit import QubitSpecifier, ClbitSpecifier
 from qiskit.quantum_info.operators import Operator
 
 
@@ -64,7 +65,13 @@ class CommutationChecker:
         return ("fallback", str(params))
 
     def commute(
-        self, op1: Operation, qargs1: List, cargs1: List, op2: Operation, qargs2: List, cargs2: List
+        self,
+        op1: Operation,
+        qargs1: Iterable[QubitSpecifier],
+        cargs1: Iterable[ClbitSpecifier],
+        op2: Operation,
+        qargs2: Iterable[QubitSpecifier],
+        cargs2: Iterable[ClbitSpecifier],
     ):
         """
         Checks if two Operations commute.

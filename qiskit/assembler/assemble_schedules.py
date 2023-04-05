@@ -12,6 +12,7 @@
 
 
 """Assemble function for converting a list of circuits into a qobj."""
+from __future__ import annotations
 import hashlib
 from collections import defaultdict
 from typing import Any, Dict, List, Tuple, Union
@@ -139,7 +140,7 @@ def _assemble_experiments(
     formatted_schedules = [transforms.target_qobj_transform(sched) for sched in schedules]
     compressed_schedules = transforms.compress_pulses(formatted_schedules)
 
-    user_pulselib = {}
+    user_pulselib: dict[str, list[complex]] = {}
     experiments = []
     for idx, sched in enumerate(compressed_schedules):
         qobj_instructions, max_memory_slot = _assemble_instructions(
@@ -196,8 +197,8 @@ def _assemble_instructions(
     sched: Union[pulse.Schedule, pulse.ScheduleBlock],
     instruction_converter: converters.InstructionToQobjConverter,
     run_config: RunConfig,
-    user_pulselib: Dict[str, List[complex]],
-) -> Tuple[List[qobj.PulseQobjInstruction], int]:
+    user_pulselib: dict[str, list[complex]],
+) -> tuple[list[qobj.PulseQobjInstruction], int]:
     """Assembles the instructions in a schedule into a list of PulseQobjInstructions and returns
     related metadata that will be assembled into the Qobj configuration. Lookup table for
     pulses defined in all experiments are registered in ``user_pulselib``. This object should be

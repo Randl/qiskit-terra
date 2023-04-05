@@ -12,6 +12,8 @@
 
 """Circuit operation representing an ``switch/case`` statement."""
 
+from __future__ import annotations
+
 __all__ = ("SwitchCaseOp", "CASE_DEFAULT")
 
 import contextlib
@@ -78,7 +80,7 @@ class SwitchCaseOp(ControlFlowOp):
         case_ids = set()
         num_qubits, num_clbits = None, None
         self.target = target
-        self._case_map = {}
+        self._case_map: dict[int | bool, int] = {}
         """Mapping of individual jump values to block indices.  This level of indirection is to let
         us more easily track the case of multiple labels pointing to the same circuit object, so
         it's easier for things like `assign_parameters`, which need to touch each circuit object

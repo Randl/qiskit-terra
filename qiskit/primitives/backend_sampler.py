@@ -75,7 +75,7 @@ class BackendSampler(BaseSampler[PrimitiveJob[SamplerResult]]):
         self._preprocessed_circuits: list[QuantumCircuit] | None = None
         self._transpiled_circuits: list[QuantumCircuit] = []
         self._skip_transpilation = skip_transpilation
-        self._circuit_ids = {}
+        self._circuit_ids: dict[tuple, int] = {}
 
     @property
     def preprocessed_circuits(self) -> list[QuantumCircuit]:

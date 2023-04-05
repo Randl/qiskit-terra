@@ -20,7 +20,9 @@ to the input of B. The object's methods allow circuits to be constructed,
 composed, and modified. Some natural properties like depth can be computed
 directly from the graph.
 """
+from __future__ import annotations
 from collections import OrderedDict, defaultdict
+from collections.abc import Iterable
 import copy
 import itertools
 import math
@@ -32,6 +34,7 @@ import rustworkx as rx
 from qiskit.circuit import ControlFlowOp, ForLoopOp, IfElseOp, WhileLoopOp, SwitchCaseOp
 from qiskit.circuit.controlflow.condition import condition_bits
 from qiskit.circuit.exceptions import CircuitError
+from qiskit.circuit.quantumcircuit import QubitSpecifier, ClbitSpecifier
 from qiskit.circuit.quantumregister import QuantumRegister, Qubit
 from qiskit.circuit.classicalregister import ClassicalRegister, Clbit
 from qiskit.circuit.gate import Gate
@@ -564,7 +567,9 @@ class DAGCircuit:
 
         return target_dag
 
-    def apply_operation_back(self, op, qargs=(), cargs=()):
+    def apply_operation_back(
+        self, op, qargs: Iterable[QubitSpecifier] = (), cargs: Iterable[ClbitSpecifier] = ()
+    ):
         """Apply an operation to the output of the circuit.
 
         Args:
@@ -1086,7 +1091,13 @@ class DAGCircuit:
         """
         return (nd for nd in self.topological_nodes(key) if isinstance(nd, DAGOpNode))
 
-    def replace_block_with_op(self, node_block, op, wire_pos_map, cycle_check=True):
+    def replace_block_with_op(
+        self,
+        node_block: list[DAGNode],
+        op,
+        wire_pos_map: dict[Qubit, int],
+        cycle_check: bool = True,
+    ) -> DAGOpNode:
         """Replace a block of nodes with a single node.
 
         This is used to consolidate a block of DAGOpNodes into a single

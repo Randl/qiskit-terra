@@ -10,7 +10,7 @@
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
 """A collection of passes to reallocate the timeslots of instructions according to context."""
-
+from __future__ import annotations
 import abc
 from typing import Callable, Dict, Any, Union, Tuple
 
@@ -220,7 +220,9 @@ class AlignRight(AlignmentKind):
             insert_time = this.stop_time - other.stop_time + other.start_time
 
         if insert_time < 0:
-            this.shift(-insert_time, inplace=True)
+            this.shift(
+                -insert_time, inplace=True
+            )  # TODO: this won't work if this is an Instruction
             this.insert(0, other, inplace=True)
         else:
             this.insert(insert_time, other, inplace=True)

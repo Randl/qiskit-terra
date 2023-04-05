@@ -1068,7 +1068,7 @@ class ScheduleBlock:
         # The nested schedule block objects should not have _reference_manager and
         # should refer to the one of the root program.
         # This also means referenced program should be assigned to the root program, not to child.
-        self._parent = None
+        self._parent: ScheduleBlock | None = None
 
         self._name = name
         self._parameter_manager = ParameterManager()

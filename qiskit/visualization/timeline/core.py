@@ -417,8 +417,8 @@ class DrawerCanvas:
         data_keys = list(links.keys())
         while len(data_keys) > 0:
             ref_key = data_keys.pop()
-            overlaps = set()
-            overlaps.add(ref_key)
+            overlap_set = set()
+            overlap_set.add(ref_key)
             for key in data_keys[::-1]:
                 # check horizontal overlap
                 if np.abs(links[ref_key].xvals[0] - links[key].xvals[0]) < allowed_overlap:
@@ -430,23 +430,23 @@ class DrawerCanvas:
                     v3 = np.nanmin(y0s) - np.nanmax(y1s)
                     v4 = np.nanmax(y0s) - np.nanmin(y1s)
                     if not (v1 * v2 > 0 and v3 * v4 > 0):
-                        overlaps.add(data_keys.pop(data_keys.index(key)))
-            overlapped_group.append(list(overlaps))
+                        overlap_set.add(data_keys.pop(data_keys.index(key)))
+            overlapped_group.append(list(overlap_set))
 
         # renew horizontal offset
         new_links = {}
-        for overlaps in overlapped_group:
-            if len(overlaps) > 1:
-                xpos_mean = np.mean([links[key].xvals[0] for key in overlaps])
+        for overlap_set in overlapped_group:
+            if len(overlap_set) > 1:
+                xpos_mean = np.mean([links[key].xvals[0] for key in overlap_set])
                 # sort link key by y position
-                sorted_keys = sorted(overlaps, key=lambda x: np.nanmax(y_coords(links[x])))
-                x0 = xpos_mean - 0.5 * allowed_overlap * (len(overlaps) - 1)
+                sorted_keys = sorted(overlap_set, key=lambda x: np.nanmax(y_coords(links[x])))
+                x0 = xpos_mean - 0.5 * allowed_overlap * (len(overlap_set) - 1)
                 for ind, key in enumerate(sorted_keys):
                     data = links[key]
                     data.xvals = [x0 + ind * allowed_overlap]
                     new_links[key] = data
             else:
-                key = overlaps[0]
+                key = overlap_set[0]
                 new_links[key] = links[key]
 
         return {key: new_links[key] for key in links.keys()}

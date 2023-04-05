@@ -12,7 +12,7 @@
 
 """CVaRMeasurement class."""
 
-
+from __future__ import annotations
 from typing import Callable, Optional, Tuple, Union, cast, Dict
 
 import numpy as np
@@ -351,7 +351,7 @@ class CVaRMeasurement(OperatorStateFn):
         raise NotImplementedError
 
 
-def _check_is_diagonal(operator: OperatorBase) -> bool:
+def _check_is_diagonal(operator: OperatorBase) -> bool | np.bool_:
     """Check whether ``operator`` is diagonal.
 
     Args:

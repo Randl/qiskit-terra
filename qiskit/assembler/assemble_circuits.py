@@ -11,6 +11,7 @@
 # that they have been altered from the originals.
 
 """Assemble function for converting a list of circuits into a qobj."""
+from __future__ import annotations
 import copy
 from collections import defaultdict
 from typing import Dict, List, Optional, Tuple
@@ -190,7 +191,7 @@ def _assemble_pulse_gates(
     if not hasattr(run_config, "parametric_pulses"):
         run_config.parametric_pulses = []
     calibrations = []
-    pulse_library = {}
+    pulse_library: dict[str, List[complex]] = {}
     for gate, cals in circuit.calibrations.items():
         for (qubits, params), schedule in cals.items():
             qobj_instructions, _ = _assemble_schedule(

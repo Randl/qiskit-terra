@@ -136,8 +136,8 @@ class BackendEstimator(BaseEstimator[PrimitiveJob[EstimatorResult]]):
         self._grouping = list(zip(range(len(self._circuits)), range(len(self._observables))))
         self._skip_transpilation = skip_transpilation
 
-        self._circuit_ids = {}
-        self._observable_ids = {}
+        self._circuit_ids: dict[tuple, int] = {}
+        self._observable_ids: dict[tuple, int] = {}
 
     @property
     def transpile_options(self) -> Options:

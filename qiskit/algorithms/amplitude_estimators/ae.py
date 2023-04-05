@@ -234,26 +234,30 @@ class AmplitudeEstimation(AmplitudeEstimator):
 
         return samples, measurements
 
-    def _evaluate_statevector_results(self, statevector):
+    def _evaluate_statevector_results(
+        self, statevector
+    ) -> tuple[dict[int, float], dict[int, float]]:
         # map measured results to estimates
-        measurements = OrderedDict()  # type: OrderedDict
+        measurements = OrderedDict()
         num_qubits = int(np.log2(len(statevector)))
         for i, amplitude in enumerate(statevector):
             b = bin(i)[2:].zfill(num_qubits)[::-1]
             y = int(b[: self._m], 2)  # chop off all except the evaluation qubits
-            measurements[y] = measurements.get(y, 0) + np.abs(amplitude) ** 2
+            measurements[y] = measurements.get(y, 0.0) + np.abs(amplitude) ** 2
 
-        samples = OrderedDict()  # type: OrderedDict
+        samples = OrderedDict()
         for y, probability in measurements.items():
             if y >= int(self._M / 2):
                 y = self._M - y
             # due to the finite accuracy of the sine, we round the result to 7 decimals
             a = np.round(np.power(np.sin(y * np.pi / 2**self._m), 2), decimals=7)
-            samples[a] = samples.get(a, 0) + probability
+            samples[a] = samples.get(a, 0.0) + probability
 
         return samples, measurements
 
-    def _evaluate_quasi_probabilities_results(self, circuit_results):
+    def _evaluate_quasi_probabilities_results(
+        self, circuit_results
+    ) -> tuple[dict[int, float], dict[int, float]]:
         # construct probabilities
         measurements = OrderedDict()
         samples = OrderedDict()
@@ -436,8 +440,9 @@ class AmplitudeEstimation(AmplitudeEstimator):
         result.mle_processed = estimation_problem.post_processing(mle)
 
         result.confidence_interval = self.compute_confidence_interval(result)
-        result.confidence_interval_processed = tuple(
-            estimation_problem.post_processing(value) for value in result.confidence_interval
+        result.confidence_interval_processed = (
+            estimation_problem.post_processing(result.confidence_interval[0]),
+            estimation_problem.post_processing(result.confidence_interval[1]),
         )
 
         return result

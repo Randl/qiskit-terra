@@ -106,8 +106,8 @@ class BaseSampler(BasePrimitive, Generic[T]):
         Args:
             options: Default options.
         """
-        self._circuits = []
-        self._parameters = []
+        self._circuits: list[QuantumCircuit] = []
+        self._parameters: list[ParameterView] = []
         super().__init__(options)
 
     def run(

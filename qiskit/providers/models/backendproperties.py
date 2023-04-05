@@ -12,6 +12,7 @@
 
 """Backend Properties classes."""
 
+from __future__ import annotations
 import copy
 import datetime
 from typing import Any, Iterable, Tuple, Union, Dict, List
@@ -376,7 +377,7 @@ class BackendProperties:
 
     def qubit_property(
         self, qubit: int, name: str = None
-    ) -> Union[Tuple[Any, datetime.datetime], Dict[str, Tuple]]:
+    ) -> tuple[Any, datetime.datetime] | dict[str, tuple]:
         """
         Return the property of the given qubit.
 
