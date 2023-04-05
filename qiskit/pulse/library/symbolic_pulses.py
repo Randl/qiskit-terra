@@ -17,6 +17,7 @@
 These are pulses which are described by symbolic equations for their envelopes and for their
 parameter constraints.
 """
+from __future__ import annotations
 import functools
 import warnings
 from typing import Any, Dict, List, Optional, Union, Callable, Tuple
@@ -84,7 +85,9 @@ def _lifted_gaussian(
 
 
 @functools.lru_cache(maxsize=None)
-def _is_amplitude_valid(envelope_lam: Callable, time: Tuple[float, ...], *fargs: float) -> bool:
+def _is_amplitude_valid(
+    envelope_lam: Callable, time: Tuple[float, ...], *fargs: float
+) -> bool | np.bool_:
     """A helper function to validate maximum amplitude limit.
 
     Result is cached for better performance.
@@ -105,7 +108,9 @@ def _is_amplitude_valid(envelope_lam: Callable, time: Tuple[float, ...], *fargs:
     return np.all(samples_norm < 1.0 + epsilon)
 
 
-def _get_expression_args(expr: sym.Expr, params: Dict[str, float]) -> List[float]:
+def _get_expression_args(
+    expr: sym.Expr, params: Dict[str, float]
+) -> List[Union[np.ndarray, float]]:
     """A helper function to get argument to evaluate expression.
 
     Args:
@@ -118,7 +123,7 @@ def _get_expression_args(expr: sym.Expr, params: Dict[str, float]) -> List[float
     Raises:
         PulseError: When a free symbol value is not defined in the pulse instance parameters.
     """
-    args = []
+    args: List[Union[np.ndarray, float]] = []
     for symbol in sorted(expr.free_symbols, key=lambda s: s.name):
         if symbol.name == "t":
             # 't' is a special parameter to represent time vector.
@@ -160,7 +165,7 @@ class LambdifiedExpression:
                 the target expression to evaluate.
         """
         self.attribute = attribute
-        self.lambda_funcs = {}
+        self.lambda_funcs: Dict[int, Callable] = {}
 
     def __get__(self, instance, owner) -> Callable:
         expr = getattr(instance, self.attribute, None)
@@ -539,11 +544,11 @@ class SymbolicPulse(Pulse):
 
     @property
     def parameters(self) -> Dict[str, Any]:
-        params = {"duration": self.duration}
+        params: Dict[str, Union[ParameterExpression, complex, int]] = {"duration": self.duration}
         params.update(self._params)
         return params
 
-    def __eq__(self, other: "SymbolicPulse") -> bool:
+    def __eq__(self, other: object) -> bool:
 
         if not isinstance(other, SymbolicPulse):
             return NotImplemented
@@ -660,7 +665,7 @@ class ScalableSymbolicPulse(SymbolicPulse):
         )
 
     # pylint: disable=too-many-return-statements
-    def __eq__(self, other: "ScalableSymbolicPulse") -> bool:
+    def __eq__(self, other: object) -> bool:
         if not isinstance(other, ScalableSymbolicPulse):
             return NotImplemented
 

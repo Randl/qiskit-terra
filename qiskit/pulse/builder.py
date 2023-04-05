@@ -678,7 +678,7 @@ class _PulseBuilder:
         """
         return self._context_stack[-1]
 
-    @property
+    @property  # type: ignore
     @_requires_backend
     def num_qubits(self):
         """Get the number of qubits in the backend."""
@@ -689,7 +689,7 @@ class _PulseBuilder:
         """The builder's transpiler settings."""
         return self._transpiler_settings
 
-    @transpiler_settings.setter
+    @transpiler_settings.setter  # type: ignore
     @_compile_lazy_circuit_before
     def transpiler_settings(self, settings: Mapping):
         self._compile_lazy_circuit()
@@ -700,7 +700,7 @@ class _PulseBuilder:
         """The builder's circuit to pulse scheduler settings."""
         return self._circuit_scheduler_settings
 
-    @circuit_scheduler_settings.setter
+    @circuit_scheduler_settings.setter  # type: ignore
     @_compile_lazy_circuit_before
     def circuit_scheduler_settings(self, settings: Mapping):
         self._compile_lazy_circuit()
@@ -907,7 +907,7 @@ class _PulseBuilder:
         )
 
     @_requires_backend
-    def call_gate(self, gate: circuit.Gate, qubits: Tuple[int, ...], lazy: bool = True):
+    def call_gate(self, gate: circuit.Gate, qubits: Union[int, Tuple[int, ...]], lazy: bool = True):
         """Call the circuit ``gate`` in the pulse program.
 
         The qubits are assumed to be defined on physical qubits.
@@ -2528,7 +2528,7 @@ def delay_qubits(duration: int, *qubits: Union[int, Iterable[int]]):
 
 
 # Gate instructions
-def call_gate(gate: circuit.Gate, qubits: Tuple[int, ...], lazy: bool = True):
+def call_gate(gate: circuit.Gate, qubits: Union[int, Tuple[int, ...]], lazy: bool = True):
     """Call a gate and lazily schedule it to its corresponding
     pulse instruction.
 

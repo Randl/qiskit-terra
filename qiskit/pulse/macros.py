@@ -13,7 +13,10 @@
 """Module for common pulse programming macros."""
 from __future__ import annotations
 
-from typing import Dict, List, Optional, Union, TYPE_CHECKING
+from __future__ import annotations
+
+from collections.abc import Sequence
+from typing import TYPE_CHECKING
 
 from qiskit.pulse import channels, exceptions, instructions, utils
 from qiskit.pulse.instruction_schedule_map import InstructionScheduleMap
@@ -25,11 +28,11 @@ if TYPE_CHECKING:
 
 
 def measure(
-    qubits: List[int],
+    qubits: Sequence[int],
     backend=None,
-    inst_map: Optional[InstructionScheduleMap] = None,
-    meas_map: Optional[Union[List[List[int]], Dict[int, List[int]]]] = None,
-    qubit_mem_slots: Optional[Dict[int, int]] = None,
+    inst_map: InstructionScheduleMap | None = None,
+    meas_map: list[list[int]] | dict[int, list[int]] | None = None,
+    qubit_mem_slots: dict[int, int] | None = None,
     measure_name: str = "measure",
 ) -> Schedule:
     """Return a schedule which measures the requested qubits according to the given

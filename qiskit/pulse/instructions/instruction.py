@@ -21,7 +21,9 @@ For example::
     sched = Schedule()
     sched += Delay(duration, channel)  # Delay is a specific subclass of Instruction
 """
+from __future__ import annotations
 from abc import ABC, abstractmethod
+from collections.abc import Collection
 from typing import Callable, Iterable, List, Optional, Set, Tuple
 
 from qiskit.circuit import Parameter
@@ -51,9 +53,9 @@ class Instruction(ABC):
             operands: The argument list.
             name: Optional display name for this instruction.
         """
-        self._operands = operands
+        self._operands: Tuple = operands
         self._name = name
-        self._hash = None
+        self._hash: int | None = None
         self._validate()
 
     def _validate(self):
@@ -81,7 +83,7 @@ class Instruction(ABC):
         """Return instruction operands."""
         return self._operands
 
-    @property
+    @property  # type: ignore
     @abstractmethod
     def channels(self) -> Tuple[Channel]:
         """Returns the channels that this schedule uses."""
@@ -103,12 +105,12 @@ class Instruction(ABC):
         raise NotImplementedError
 
     @property
-    def _children(self) -> Tuple["Instruction"]:
+    def _children(self) -> Tuple["Instruction", ...]:
         """Instruction has no child nodes."""
         return ()
 
     @property
-    def instructions(self) -> Tuple[Tuple[int, "Instruction"]]:
+    def instructions(self) -> Tuple[Tuple[int, "Instruction"], ...]:
         """Iterable for getting instructions from Schedule tree."""
         return tuple(self._instructions())
 
@@ -129,7 +131,7 @@ class Instruction(ABC):
         """
         return 0
 
-    def ch_stop_time(self, *channels: List[Channel]) -> int:
+    def ch_stop_time(self, *channels: Collection[Channel]) -> int:
         """Return maximum start time for supplied channels.
 
         Args:
@@ -292,11 +294,13 @@ class Instruction(ABC):
             image.show()
         return image
 
-    def __eq__(self, other: "Instruction") -> bool:
+    def __eq__(self, other: object) -> bool:
         """Check if this Instruction is equal to the `other` instruction.
 
         Equality is determined by the instruction sharing the same operands and channels.
         """
+        if not isinstance(other, Instruction):
+            return NotImplemented
         return isinstance(other, type(self)) and self.operands == other.operands
 
     def __hash__(self) -> int:

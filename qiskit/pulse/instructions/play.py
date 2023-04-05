@@ -15,6 +15,7 @@ transmitted pulses, such as ``DriveChannel``).
 """
 from typing import Optional, Union, Tuple, Set
 
+from qiskit.circuit import Parameter
 from qiskit.circuit.parameterexpression import ParameterExpression
 from qiskit.pulse.channels import PulseChannel
 from qiskit.pulse.exceptions import PulseError
@@ -82,7 +83,7 @@ class Play(Instruction):
     @property
     def parameters(self) -> Set:
         """Parameters which determine the instruction behavior."""
-        parameters = set()
+        parameters: set[Parameter] = set()
 
         # Note that Pulse.parameters returns dict rather than set for convention.
         # We need special handling for Play instruction.

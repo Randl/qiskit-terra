@@ -113,7 +113,9 @@ class Waveform(Pulse):
         """Return a dictionary containing the pulse's parameters."""
         return {}
 
-    def __eq__(self, other: Pulse) -> bool:
+    def __eq__(self, other: object) -> bool:
+        if not isinstance(other, Waveform):
+            return NotImplemented
         return (
             super().__eq__(other)
             and self.samples.shape == other.samples.shape
@@ -121,7 +123,7 @@ class Waveform(Pulse):
         )
 
     def __hash__(self) -> int:
-        return hash(self.samples.tostring())
+        return hash(self.samples.tobytes())
 
     def __repr__(self) -> str:
         opt = np.get_printoptions()

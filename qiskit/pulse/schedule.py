@@ -30,7 +30,7 @@ instruction occuring in parallel over multiple signal *channels*.
    Schedule
    ScheduleBlock
 """
-
+from __future__ import annotations
 import abc
 import copy
 import functools
@@ -39,7 +39,8 @@ import multiprocessing as mp
 import re
 import sys
 import warnings
-from typing import List, Tuple, Iterable, Union, Dict, Callable, Set, Optional, Any
+from collections.abc import Callable, Iterable
+from typing import List, Tuple, Union, Dict, Any
 
 import numpy as np
 import rustworkx as rx
@@ -120,9 +121,9 @@ class Schedule:
 
     def __init__(
         self,
-        *schedules: Union["ScheduleComponent", Tuple[int, "ScheduleComponent"]],
-        name: Optional[str] = None,
-        metadata: Optional[dict] = None,
+        *schedules: "ScheduleComponent" | tuple[int, "ScheduleComponent"],
+        name: str | None = None,
+        metadata: dict | None = None,
     ):
         """Create an empty schedule.
 
@@ -154,8 +155,8 @@ class Schedule:
         self._duration = 0
 
         # These attributes are populated by ``_mutable_insert``
-        self._timeslots = {}
-        self._children = []
+        self._timeslots: TimeSlots = {}
+        self._children: list[tuple[int, "ScheduleComponent"]] = []
         for sched_pair in schedules:
             try:
                 time, sched = sched_pair
@@ -165,7 +166,7 @@ class Schedule:
             self._mutable_insert(time, sched)
 
     @classmethod
-    def initialize_from(cls, other_program: Any, name: Optional[str] = None) -> "Schedule":
+    def initialize_from(cls, other_program: Any, name: str | None = None) -> "Schedule":
         """Create new schedule object with metadata of another schedule object.
 
         Args:
@@ -199,7 +200,7 @@ class Schedule:
         return self._name
 
     @property
-    def metadata(self) -> Dict[str, Any]:
+    def metadata(self) -> dict[str, Any]:
         """The user provided metadata associated with the schedule.
 
         User provided ``dict`` of metadata for the schedule.
@@ -239,12 +240,12 @@ class Schedule:
         return self.duration
 
     @property
-    def channels(self) -> Tuple[Channel]:
+    def channels(self) -> tuple[Channel, ...]:
         """Returns channels that this schedule uses."""
         return tuple(self._timeslots.keys())
 
     @property
-    def children(self) -> Tuple[Tuple[int, "ScheduleComponent"], ...]:
+    def children(self) -> tuple[tuple[int, "ScheduleComponent"], ...]:
         """Return the child schedule components of this ``Schedule`` in the
         order they were added to the schedule.
 
@@ -260,7 +261,7 @@ class Schedule:
         return tuple(self._children)
 
     @property
-    def instructions(self) -> Tuple[Tuple[int, Instruction]]:
+    def instructions(self) -> tuple[tuple[int, Instruction], ...]:
         """Get the time-ordered instructions from self."""
 
         def key(time_inst_pair):
@@ -270,7 +271,7 @@ class Schedule:
         return tuple(sorted(self._instructions(), key=key))
 
     @property
-    def parameters(self) -> Set:
+    def parameters(self) -> set:
         """Parameters which determine the schedule behavior."""
         return self._parameter_manager.parameters
 
@@ -322,7 +323,7 @@ class Schedule:
         for insert_time, child_sched in self.children:
             yield from child_sched._instructions(time + insert_time)
 
-    def shift(self, time: int, name: Optional[str] = None, inplace: bool = False) -> "Schedule":
+    def shift(self, time: int, name: str | None = None, inplace: bool = False) -> "Schedule":
         """Return a schedule shifted forward by ``time``.
 
         Args:
@@ -335,7 +336,7 @@ class Schedule:
             return self._mutable_shift(time)
         return self._immutable_shift(time, name=name)
 
-    def _immutable_shift(self, time: int, name: Optional[str] = None) -> "Schedule":
+    def _immutable_shift(self, time: int, name: str | None = None) -> "Schedule":
         """Return a new schedule shifted forward by `time`.
 
         Args:
@@ -374,7 +375,7 @@ class Schedule:
         self,
         start_time: int,
         schedule: "ScheduleComponent",
-        name: Optional[str] = None,
+        name: str | None = None,
         inplace: bool = False,
     ) -> "Schedule":
         """Return a new schedule with ``schedule`` inserted into ``self`` at ``start_time``.
@@ -406,7 +407,7 @@ class Schedule:
         self,
         start_time: int,
         schedule: "ScheduleComponent",
-        name: Optional[str] = None,
+        name: str | None = None,
     ) -> "Schedule":
         """Return a new schedule with ``schedule`` inserted into ``self`` at ``start_time``.
         Args:
@@ -420,7 +421,7 @@ class Schedule:
         return new_sched
 
     def append(
-        self, schedule: "ScheduleComponent", name: Optional[str] = None, inplace: bool = False
+        self, schedule: "ScheduleComponent", name: str | None = None, inplace: bool = False
     ) -> "Schedule":
         r"""Return a new schedule with ``schedule`` inserted at the maximum time over
         all channels shared between ``self`` and ``schedule``.
@@ -443,10 +444,10 @@ class Schedule:
     def filter(
         self,
         *filter_funcs: Callable,
-        channels: Optional[Iterable[Channel]] = None,
-        instruction_types: Union[Iterable[abc.ABCMeta], abc.ABCMeta] = None,
-        time_ranges: Optional[Iterable[Tuple[int, int]]] = None,
-        intervals: Optional[Iterable[Interval]] = None,
+        channels: Iterable[Channel] | None = None,
+        instruction_types: Iterable[abc.ABCMeta] | abc.ABCMeta = None,
+        time_ranges: Iterable[tuple[int, int]] | None = None,
+        intervals: Iterable[Interval] | None = None,
         check_subroutine: bool = True,
     ) -> "Schedule":
         """Return a new ``Schedule`` with only the instructions from this ``Schedule`` which pass
@@ -480,10 +481,10 @@ class Schedule:
     def exclude(
         self,
         *filter_funcs: Callable,
-        channels: Optional[Iterable[Channel]] = None,
-        instruction_types: Union[Iterable[abc.ABCMeta], abc.ABCMeta] = None,
-        time_ranges: Optional[Iterable[Tuple[int, int]]] = None,
-        intervals: Optional[Iterable[Interval]] = None,
+        channels: Iterable[Channel] | None = None,
+        instruction_types: Iterable[abc.ABCMeta] | abc.ABCMeta = None,
+        time_ranges: Iterable[tuple[int, int]] | None = None,
+        intervals: Iterable[Interval] | None = None,
         check_subroutine: bool = True,
     ) -> "Schedule":
         """Return a ``Schedule`` with only the instructions from this Schedule *failing*
@@ -711,7 +712,7 @@ class Schedule:
         return self._parameter_manager.is_parameterized()
 
     def assign_parameters(
-        self, value_dict: Dict[ParameterExpression, ParameterValueType], inplace: bool = True
+        self, value_dict: dict[ParameterExpression, ParameterValueType], inplace: bool = True
     ) -> "Schedule":
         """Assign the parameters in this schedule according to the input.
 
@@ -729,7 +730,7 @@ class Schedule:
 
         return self._parameter_manager.assign_parameters(pulse_program=self, value_dict=value_dict)
 
-    def get_parameters(self, parameter_name: str) -> List[Parameter]:
+    def get_parameters(self, parameter_name: str) -> list[Parameter]:
         """Get parameter object bound to this schedule by string name.
 
         Because different ``Parameter`` objects can have the same name,
@@ -759,7 +760,7 @@ class Schedule:
         """Return a new schedule which is shifted forward by ``time``."""
         return self.shift(time)
 
-    def __eq__(self, other: "ScheduleComponent") -> bool:
+    def __eq__(self, other: object) -> bool:
         """Test if two Schedule are equal.
 
         Equality is checked by verifying there is an equal instruction at every time
@@ -1037,7 +1038,7 @@ class ScheduleBlock:
     instances_counter = itertools.count()
 
     def __init__(
-        self, name: Optional[str] = None, metadata: Optional[dict] = None, alignment_context=None
+        self, name: str | None = None, metadata: dict | None = None, alignment_context=None
     ):
         """Create an empty schedule block.
 
@@ -1073,7 +1074,7 @@ class ScheduleBlock:
         self._parameter_manager = ParameterManager()
         self._reference_manager = ReferenceManager()
         self._alignment_context = alignment_context or AlignLeft()
-        self._blocks = []
+        self._blocks: list["BlockComponent"] = []
 
         # get parameters from context
         self._parameter_manager.update_parameter_table(self._alignment_context)
@@ -1083,7 +1084,7 @@ class ScheduleBlock:
         self._metadata = metadata or {}
 
     @classmethod
-    def initialize_from(cls, other_program: Any, name: Optional[str] = None) -> "ScheduleBlock":
+    def initialize_from(cls, other_program: Any, name: str | None = None) -> "ScheduleBlock":
         """Create new schedule object with metadata of another schedule object.
 
         Args:
@@ -1122,7 +1123,7 @@ class ScheduleBlock:
         return self._name
 
     @property
-    def metadata(self) -> Dict[str, Any]:
+    def metadata(self) -> dict[str, Any]:
         """The user provided metadata associated with the schedule.
 
         User provided ``dict`` of metadata for the schedule.
@@ -1166,16 +1167,16 @@ class ScheduleBlock:
                     return False
         return True
 
-    @property
+    @property  # type: ignore
     @_require_schedule_conversion
     def duration(self) -> int:
         """Duration of this schedule block."""
         return self.duration
 
     @property
-    def channels(self) -> Tuple[Channel]:
+    def channels(self) -> tuple[Channel, ...]:
         """Returns channels that this schedule block uses."""
-        chans = set()
+        chans: set[Channel] = set()
         for elm in self.blocks:
             if isinstance(elm, Reference):
                 raise UnassignedReferenceError(
@@ -1185,14 +1186,14 @@ class ScheduleBlock:
             chans = chans | set(elm.channels)
         return tuple(chans)
 
-    @property
+    @property  # type: ignore
     @_require_schedule_conversion
-    def instructions(self) -> Tuple[Tuple[int, Instruction]]:
+    def instructions(self) -> tuple[tuple[int, Instruction]]:
         """Get the time-ordered instructions from self."""
         return self.instructions
 
     @property
-    def blocks(self) -> Tuple["BlockComponent", ...]:
+    def blocks(self) -> tuple["BlockComponent", ...]:
         """Get the block elements added to self.
 
         .. note::
@@ -1212,7 +1213,7 @@ class ScheduleBlock:
         return tuple(blocks)
 
     @property
-    def parameters(self) -> Set[Parameter]:
+    def parameters(self) -> set[Parameter]:
         """Return unassigned parameters with raw names."""
         # Need new object not to mutate parameter_manager.parameters
         out_params = set()
@@ -1225,7 +1226,7 @@ class ScheduleBlock:
 
         return out_params
 
-    def scoped_parameters(self) -> Tuple[Parameter]:
+    def scoped_parameters(self) -> tuple[Parameter, ...]:
         """Return unassigned parameters with scoped names.
 
         .. note::
@@ -1261,7 +1262,7 @@ class ScheduleBlock:
         return self.ch_duration(*channels)
 
     def append(
-        self, block: "BlockComponent", name: Optional[str] = None, inplace: bool = True
+        self, block: "BlockComponent", name: str | None = None, inplace: bool = True
     ) -> "ScheduleBlock":
         """Return a new schedule block with ``block`` appended to the context block.
         The execution time is automatically assigned when the block is converted into schedule.
@@ -1323,11 +1324,11 @@ class ScheduleBlock:
 
     def filter(
         self,
-        *filter_funcs: List[Callable],
-        channels: Optional[Iterable[Channel]] = None,
-        instruction_types: Union[Iterable[abc.ABCMeta], abc.ABCMeta] = None,
-        time_ranges: Optional[Iterable[Tuple[int, int]]] = None,
-        intervals: Optional[Iterable[Interval]] = None,
+        *filter_funcs: list[Callable],
+        channels: Iterable[Channel] | None = None,
+        instruction_types: Iterable[abc.ABCMeta] | abc.ABCMeta = None,
+        time_ranges: Iterable[tuple[int, int]] | None = None,
+        intervals: Iterable[Interval] | None = None,
         check_subroutine: bool = True,
     ):
         """Return a new ``Schedule`` with only the instructions from this ``ScheduleBlock``
@@ -1368,11 +1369,11 @@ class ScheduleBlock:
 
     def exclude(
         self,
-        *filter_funcs: List[Callable],
-        channels: Optional[Iterable[Channel]] = None,
-        instruction_types: Union[Iterable[abc.ABCMeta], abc.ABCMeta] = None,
-        time_ranges: Optional[Iterable[Tuple[int, int]]] = None,
-        intervals: Optional[Iterable[Interval]] = None,
+        *filter_funcs: list[Callable],
+        channels: Iterable[Channel] | None = None,
+        instruction_types: Iterable[abc.ABCMeta] | abc.ABCMeta = None,
+        time_ranges: Iterable[tuple[int, int]] | None = None,
+        intervals: Iterable[Interval] | None = None,
         check_subroutine: bool = True,
     ):
         """Return a ``Schedule`` with only the instructions from this Schedule *failing*
@@ -1486,7 +1487,7 @@ class ScheduleBlock:
 
     def assign_parameters(
         self,
-        value_dict: Dict[ParameterExpression, ParameterValueType],
+        value_dict: dict[ParameterExpression, ParameterValueType],
         inplace: bool = True,
     ) -> "ScheduleBlock":
         """Assign the parameters in this schedule according to the input.
@@ -1521,7 +1522,7 @@ class ScheduleBlock:
 
     def assign_references(
         self,
-        subroutine_dict: Dict[Union[str, Tuple[str, ...]], "ScheduleBlock"],
+        subroutine_dict: dict[str | tuple[str, ...], "ScheduleBlock"],
         inplace: bool = True,
     ) -> "ScheduleBlock":
         """Assign schedules to references.
@@ -1599,7 +1600,7 @@ class ScheduleBlock:
 
         return self
 
-    def get_parameters(self, parameter_name: str) -> List[Parameter]:
+    def get_parameters(self, parameter_name: str) -> list[Parameter]:
         """Get parameter object bound to this schedule by string name.
 
         Note that we can define different parameter objects with the same name,
@@ -1633,7 +1634,7 @@ class ScheduleBlock:
         matched = [p for p in self.parameters if p.name == parameter_name]
         return matched
 
-    def search_parameters(self, parameter_regex: str) -> List[Parameter]:
+    def search_parameters(self, parameter_regex: str) -> list[Parameter]:
         """Search parameter with regular expression.
 
         This method looks for the scope-aware parameters.
@@ -1674,7 +1675,7 @@ class ScheduleBlock:
         """Return number of instructions in the schedule."""
         return len(self.blocks)
 
-    def __eq__(self, other: "ScheduleBlock") -> bool:
+    def __eq__(self, other: object) -> bool:
         """Test if two ScheduleBlocks are equal.
 
         Equality is checked by verifying there is an equal instruction at every time
@@ -1752,17 +1753,17 @@ def _common_method(*classes):
 @_common_method(Schedule, ScheduleBlock)
 def draw(
     self,
-    style: Optional[Dict[str, Any]] = None,
+    style: dict[str, Any] | None = None,
     backend=None,  # importing backend causes cyclic import
-    time_range: Optional[Tuple[int, int]] = None,
+    time_range: tuple[int, int] | None = None,
     time_unit: str = "dt",
-    disable_channels: Optional[List[Channel]] = None,
+    disable_channels: list[Channel] | None = None,
     show_snapshot: bool = True,
     show_framechange: bool = True,
     show_waveform_info: bool = True,
     show_barrier: bool = True,
     plotter: str = "mpl2d",
-    axis: Optional[Any] = None,
+    axis: Any | None = None,
 ):
     """Plot the schedule.
 
@@ -1821,7 +1822,7 @@ def draw(
     )
 
 
-def _interval_index(intervals: List[Interval], interval: Interval) -> int:
+def _interval_index(intervals: list[Interval], interval: Interval) -> int:
     """Find the index of an interval.
 
     Args:
@@ -1841,7 +1842,7 @@ def _interval_index(intervals: List[Interval], interval: Interval) -> int:
     return index
 
 
-def _locate_interval_index(intervals: List[Interval], interval: Interval, index: int = 0) -> int:
+def _locate_interval_index(intervals: list[Interval], interval: Interval, index: int = 0) -> int:
     """Using binary search on start times, find an interval.
 
     Args:
@@ -1864,7 +1865,7 @@ def _locate_interval_index(intervals: List[Interval], interval: Interval, index:
         return _locate_interval_index(intervals[mid_idx:], interval, index=index + mid_idx)
 
 
-def _find_insertion_index(intervals: List[Interval], new_interval: Interval) -> int:
+def _find_insertion_index(intervals: list[Interval], new_interval: Interval) -> int:
     """Using binary search on start times, return the index into `intervals` where the new interval
     belongs, or raise an error if the new interval overlaps with any existing ones.
     Args:
@@ -1929,7 +1930,7 @@ def _get_timeslots(schedule: "ScheduleComponent") -> TimeSlots:
     return timeslots
 
 
-def _get_references(block_elms: List["BlockComponent"]) -> Set[Reference]:
+def _get_references(block_elms: list["BlockComponent"]) -> set[Reference]:
     """Recursively get reference instructions in the current scope.
 
     Args:
@@ -1950,8 +1951,8 @@ def _get_references(block_elms: List["BlockComponent"]) -> Set[Reference]:
 def _collect_scoped_parameters(
     schedule: ScheduleBlock,
     current_scope: str,
-    filter_regex: Optional[re.Pattern] = None,
-) -> Dict[Tuple[str, int], Parameter]:
+    filter_regex: re.Pattern | None = None,
+) -> dict[tuple[str, int], Parameter]:
     """A helper function to collect parameters from all references in scope-aware fashion.
 
     Parameter object is renamed with attached scope information but its UUID is remained.

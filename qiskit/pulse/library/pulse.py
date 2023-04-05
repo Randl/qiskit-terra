@@ -57,7 +57,7 @@ class Pulse(ABC):
         """Unique identifier for this pulse."""
         return id(self)
 
-    @property
+    @property  # type: ignore
     @abstractmethod
     def parameters(self) -> Dict[str, Any]:
         """Return a dictionary containing the pulse's parameters."""
@@ -125,7 +125,9 @@ class Pulse(ABC):
         )
 
     @abstractmethod
-    def __eq__(self, other: "Pulse") -> bool:
+    def __eq__(self, other: object) -> bool:
+        if not isinstance(other, Pulse):
+            return NotImplemented
         return isinstance(other, type(self))
 
     @abstractmethod
