@@ -20,7 +20,7 @@ parameter constraints.
 from __future__ import annotations
 import functools
 import warnings
-from typing import Any, Dict, List, Optional, Union, Callable, Tuple
+from typing import Any, Dict, Optional, Union, Callable, Tuple
 from copy import deepcopy
 
 import numpy as np
@@ -110,7 +110,7 @@ def _is_amplitude_valid(
 
 def _get_expression_args(
     expr: sym.Expr, params: Dict[str, float]
-) -> List[Union[np.ndarray, float]]:
+) -> list[Union[np.ndarray, float]]:
     """A helper function to get argument to evaluate expression.
 
     Args:
@@ -123,7 +123,7 @@ def _get_expression_args(
     Raises:
         PulseError: When a free symbol value is not defined in the pulse instance parameters.
     """
-    args: List[Union[np.ndarray, float]] = []
+    args: list[Union[np.ndarray, float]] = []
     for symbol in sorted(expr.free_symbols, key=lambda s: s.name):
         if symbol.name == "t":
             # 't' is a special parameter to represent time vector.
@@ -743,7 +743,7 @@ class Gaussian(metaclass=_PulseType):
 
     def __new__(
         cls,
-        duration: Union[int, ParameterExpression],
+        duration: int | ParameterExpression,
         amp: Union[complex, float, ParameterExpression],
         sigma: Union[float, ParameterExpression],
         angle: Optional[Union[float, ParameterExpression]] = None,
@@ -839,7 +839,7 @@ class GaussianSquare(metaclass=_PulseType):
 
     def __new__(
         cls,
-        duration: Union[int, ParameterExpression],
+        duration: int | ParameterExpression,
         amp: Union[complex, float, ParameterExpression],
         sigma: Union[float, ParameterExpression],
         width: Optional[Union[float, ParameterExpression]] = None,
@@ -925,7 +925,7 @@ class GaussianSquare(metaclass=_PulseType):
 
 
 def GaussianSquareDrag(
-    duration: Union[int, ParameterExpression],
+    duration: int | ParameterExpression,
     amp: Union[float, ParameterExpression],
     sigma: Union[float, ParameterExpression],
     beta: Union[float, ParameterExpression],
@@ -1316,7 +1316,7 @@ class Drag(metaclass=_PulseType):
 
     def __new__(
         cls,
-        duration: Union[int, ParameterExpression],
+        duration: int | ParameterExpression,
         amp: Union[complex, float, ParameterExpression],
         sigma: Union[float, ParameterExpression],
         beta: Union[float, ParameterExpression],
@@ -1387,7 +1387,7 @@ class Constant(metaclass=_PulseType):
 
     def __new__(
         cls,
-        duration: Union[int, ParameterExpression],
+        duration: int | ParameterExpression,
         amp: Union[complex, float, ParameterExpression],
         angle: Optional[Union[float, ParameterExpression]] = None,
         name: Optional[str] = None,
@@ -1441,7 +1441,7 @@ class Constant(metaclass=_PulseType):
 
 
 def Sin(
-    duration: Union[int, ParameterExpression],
+    duration: int | ParameterExpression,
     amp: Union[float, ParameterExpression],
     phase: Union[float, ParameterExpression],
     freq: Optional[Union[float, ParameterExpression]] = None,
@@ -1508,7 +1508,7 @@ def Sin(
 
 
 def Cos(
-    duration: Union[int, ParameterExpression],
+    duration: int | ParameterExpression,
     amp: Union[float, ParameterExpression],
     phase: Union[float, ParameterExpression],
     freq: Optional[Union[float, ParameterExpression]] = None,
@@ -1575,7 +1575,7 @@ def Cos(
 
 
 def Sawtooth(
-    duration: Union[int, ParameterExpression],
+    duration: int | ParameterExpression,
     amp: Union[float, ParameterExpression],
     phase: Union[float, ParameterExpression],
     freq: Optional[Union[float, ParameterExpression]] = None,
@@ -1646,7 +1646,7 @@ def Sawtooth(
 
 
 def Triangle(
-    duration: Union[int, ParameterExpression],
+    duration: int | ParameterExpression,
     amp: Union[float, ParameterExpression],
     phase: Union[float, ParameterExpression],
     freq: Optional[Union[float, ParameterExpression]] = None,

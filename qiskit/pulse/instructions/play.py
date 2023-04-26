@@ -13,7 +13,8 @@
 """An instruction to transmit a given pulse on a ``PulseChannel`` (i.e., those which support
 transmitted pulses, such as ``DriveChannel``).
 """
-from typing import Optional, Union, Tuple, Set
+from __future__ import annotations
+from typing import Optional
 
 from qiskit.circuit import Parameter
 from qiskit.circuit.parameterexpression import ParameterExpression
@@ -71,17 +72,17 @@ class Play(Instruction):
         return self.operands[1]
 
     @property
-    def channels(self) -> Tuple[PulseChannel]:
+    def channels(self) -> tuple[PulseChannel]:
         """Returns the channels that this schedule uses."""
         return (self.channel,)
 
     @property
-    def duration(self) -> Union[int, ParameterExpression]:
+    def duration(self) -> int | ParameterExpression:
         """Duration of this instruction."""
         return self.pulse.duration
 
     @property
-    def parameters(self) -> Set:
+    def parameters(self) -> set[Parameter]:
         """Parameters which determine the instruction behavior."""
         parameters: set[Parameter] = set()
 

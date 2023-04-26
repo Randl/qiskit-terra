@@ -13,8 +13,9 @@
 """Pulses are descriptions of waveform envelopes. They can be transmitted by control electronics
 to the device.
 """
+from __future__ import annotations
 from abc import ABC, abstractmethod
-from typing import Dict, Optional, Any, Tuple, Union
+from typing import Dict, Optional, Any, Tuple
 
 from qiskit.circuit.parameterexpression import ParameterExpression
 
@@ -31,7 +32,7 @@ class Pulse(ABC):
     @abstractmethod
     def __init__(
         self,
-        duration: Union[int, ParameterExpression],
+        duration: int | ParameterExpression,
         name: Optional[str] = None,
         limit_amplitude: Optional[bool] = None,
     ):

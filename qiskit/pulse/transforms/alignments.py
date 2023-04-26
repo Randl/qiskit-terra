@@ -12,7 +12,7 @@
 """A collection of passes to reallocate the timeslots of instructions according to context."""
 from __future__ import annotations
 import abc
-from typing import Callable, Dict, Any, Union, Tuple
+from typing import Callable, Dict, Any, Tuple
 
 import numpy as np
 
@@ -271,7 +271,7 @@ class AlignEquispaced(AlignmentKind):
     This alignment is convenient to create dynamical decoupling sequences such as PDD.
     """
 
-    def __init__(self, duration: Union[int, ParameterExpression]):
+    def __init__(self, duration: int | ParameterExpression):
         """Create new equispaced context.
 
         Args:
@@ -361,7 +361,7 @@ class AlignFunc(AlignmentKind):
 
     """
 
-    def __init__(self, duration: Union[int, ParameterExpression], func: Callable):
+    def __init__(self, duration: int | ParameterExpression, func: Callable):
         """Create new equispaced context.
 
         Args:

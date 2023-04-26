@@ -36,8 +36,9 @@ by following the existing pattern:
         ...
         new_supported_pulse_name = library.YourPulseWaveformClass
 """
+from __future__ import annotations
 from abc import abstractmethod
-from typing import Any, Dict, Optional, Union
+from typing import Any, Optional, Union
 
 import math
 import numpy as np
@@ -73,7 +74,7 @@ class ParametricPulse(Pulse):
     )
     def __init__(
         self,
-        duration: Union[int, ParameterExpression],
+        duration: int | ParameterExpression,
         name: Optional[str] = None,
         limit_amplitude: Optional[bool] = None,
     ):
@@ -144,7 +145,7 @@ class Gaussian(ParametricPulse):
     )
     def __init__(
         self,
-        duration: Union[int, ParameterExpression],
+        duration: int | ParameterExpression,
         amp: Union[complex, ParameterExpression],
         sigma: Union[float, ParameterExpression],
         name: Optional[str] = None,
@@ -191,7 +192,7 @@ class Gaussian(ParametricPulse):
             raise PulseError("Sigma must be greater than 0.")
 
     @property
-    def parameters(self) -> Dict[str, Any]:
+    def parameters(self) -> dict[str, Any]:
         return {"duration": self.duration, "amp": self.amp, "sigma": self.sigma}
 
     def __repr__(self) -> str:
@@ -256,7 +257,7 @@ class GaussianSquare(ParametricPulse):
     )
     def __init__(
         self,
-        duration: Union[int, ParameterExpression],
+        duration: int | ParameterExpression,
         amp: Union[complex, ParameterExpression],
         sigma: Union[float, ParameterExpression],
         width: Union[float, ParameterExpression] = None,
@@ -358,7 +359,7 @@ class GaussianSquare(ParametricPulse):
             self._width = self.duration - 2.0 * self.risefall_sigma_ratio * self.sigma
 
     @property
-    def parameters(self) -> Dict[str, Any]:
+    def parameters(self) -> dict[str, Any]:
         return {
             "duration": self.duration,
             "amp": self.amp,
@@ -426,7 +427,7 @@ class Drag(ParametricPulse):
     )
     def __init__(
         self,
-        duration: Union[int, ParameterExpression],
+        duration: int | ParameterExpression,
         amp: Union[complex, ParameterExpression],
         sigma: Union[float, ParameterExpression],
         beta: Union[float, ParameterExpression],
@@ -515,7 +516,7 @@ class Drag(ParametricPulse):
                 raise PulseError("Beta is too large; pulse amplitude norm exceeds 1.")
 
     @property
-    def parameters(self) -> Dict[str, Any]:
+    def parameters(self) -> dict[str, Any]:
         return {"duration": self.duration, "amp": self.amp, "sigma": self.sigma, "beta": self.beta}
 
     def __repr__(self) -> str:
@@ -549,7 +550,7 @@ class Constant(ParametricPulse):
     )
     def __init__(
         self,
-        duration: Union[int, ParameterExpression],
+        duration: int | ParameterExpression,
         amp: Union[complex, ParameterExpression],
         name: Optional[str] = None,
         limit_amplitude: Optional[bool] = None,
@@ -586,7 +587,7 @@ class Constant(ParametricPulse):
             )
 
     @property
-    def parameters(self) -> Dict[str, Any]:
+    def parameters(self) -> dict[str, Any]:
         return {"duration": self.duration, "amp": self.amp}
 
     def __repr__(self) -> str:

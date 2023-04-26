@@ -11,8 +11,11 @@
 # that they have been altered from the originals.
 
 """Private utility functions that are used by the builder interfaces."""
+from __future__ import annotations
 
-from typing import Iterable, Tuple, Set
+from collections.abc import Iterable
+
+from qiskit.circuit import Clbit, Qubit
 
 from qiskit.circuit.exceptions import CircuitError
 from qiskit.circuit.quantumcircuit import QuantumCircuit
@@ -23,7 +26,7 @@ from qiskit.circuit.quantumregister import QuantumRegister
 
 def partition_registers(
     registers: Iterable[Register],
-) -> Tuple[Set[QuantumRegister], Set[ClassicalRegister]]:
+) -> tuple[set[QuantumRegister], set[ClassicalRegister]]:
     """Partition a sequence of registers into its quantum and classical registers."""
     qregs = set()
     cregs = set()
@@ -54,8 +57,8 @@ def unify_circuit_resources(circuits: Iterable[QuantumCircuit]) -> Iterable[Quan
     circuits = tuple(circuits)
     if len(circuits) < 2:
         return circuits
-    qubits = []
-    clbits = []
+    qubits: list[Qubit] = []
+    clbits: list[Clbit] = []
     for circuit in circuits:
         if circuit.qubits[: len(qubits)] != qubits:
             return _unify_circuit_resources_rebuild(circuits)
@@ -72,8 +75,8 @@ def unify_circuit_resources(circuits: Iterable[QuantumCircuit]) -> Iterable[Quan
 
 
 def _unify_circuit_resources_rebuild(  # pylint: disable=invalid-name  # (it's too long?!)
-    circuits: Tuple[QuantumCircuit, ...]
-) -> Tuple[QuantumCircuit, QuantumCircuit]:
+    circuits: tuple[QuantumCircuit, ...]
+) -> tuple[QuantumCircuit, QuantumCircuit]:
     """
     Ensure that all the given circuits have all the same qubits and clbits, and that they
     are defined in the same order.  The order is important for binding when the bodies are used in

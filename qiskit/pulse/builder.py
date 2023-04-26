@@ -457,12 +457,14 @@ how the program is built.
     samples_to_seconds
     seconds_to_samples
 """
+from __future__ import annotations
 import collections
 import contextvars
 import functools
 import itertools
 import uuid
 import warnings
+from collections.abc import Generator
 from contextlib import contextmanager
 from functools import singledispatchmethod
 from typing import (
@@ -502,7 +504,7 @@ from qiskit.pulse.transforms.alignments import AlignmentKind
 
 
 #: contextvars.ContextVar[BuilderContext]: active builder
-BUILDER_CONTEXTVAR = contextvars.ContextVar("backend")
+BUILDER_CONTEXTVAR: contextvars.ContextVar["_PulseBuilder"] = contextvars.ContextVar("backend")
 
 T = TypeVar("T")
 
@@ -1278,7 +1280,7 @@ def active_circuit_scheduler_settings() -> Dict[str, Any]:
 
 
 @contextmanager
-def align_left() -> ContextManager[None]:
+def align_left() -> Generator[None, None, None]:
     """Left alignment pulse scheduling context.
 
     Pulse instructions within this context are scheduled as early as possible
@@ -1316,7 +1318,7 @@ def align_left() -> ContextManager[None]:
 
 
 @contextmanager
-def align_right() -> AlignmentKind:
+def align_right() -> Generator[None, None, None]:
     """Right alignment pulse scheduling context.
 
     Pulse instructions within this context are scheduled as late as possible
@@ -1354,7 +1356,7 @@ def align_right() -> AlignmentKind:
 
 
 @contextmanager
-def align_sequential() -> AlignmentKind:
+def align_sequential() -> Generator[None, None, None]:
     """Sequential alignment pulse scheduling context.
 
     Pulse instructions within this context are scheduled sequentially in time
@@ -1392,7 +1394,7 @@ def align_sequential() -> AlignmentKind:
 
 
 @contextmanager
-def align_equispaced(duration: Union[int, ParameterExpression]) -> AlignmentKind:
+def align_equispaced(duration: int | ParameterExpression) -> Generator[None, None, None]:
     """Equispaced alignment pulse scheduling context.
 
     Pulse instructions within this context are scheduled with the same interval spacing such that
@@ -1445,8 +1447,8 @@ def align_equispaced(duration: Union[int, ParameterExpression]) -> AlignmentKind
 
 @contextmanager
 def align_func(
-    duration: Union[int, ParameterExpression], func: Callable[[int], float]
-) -> AlignmentKind:
+    duration: int | ParameterExpression, func: Callable[[int], float]
+) -> Generator[None, None, None]:
     """Callback defined alignment pulse scheduling context.
 
     Pulse instructions within this context are scheduled at the location specified by
@@ -1506,7 +1508,7 @@ def align_func(
 
 
 @contextmanager
-def general_transforms(alignment_context: AlignmentKind) -> ContextManager[None]:
+def general_transforms(alignment_context: AlignmentKind) -> Generator[None, None, None]:
     """Arbitrary alignment transformation defined by a subclass instance of
     :class:`~qiskit.pulse.transforms.alignments.AlignmentKind`.
 
@@ -1532,7 +1534,7 @@ def general_transforms(alignment_context: AlignmentKind) -> ContextManager[None]
 
 
 @contextmanager
-def transpiler_settings(**settings) -> ContextManager[None]:
+def transpiler_settings(**settings) -> Generator[None, None, None]:
     """Set the currently active transpiler settings for this context.
 
     Examples:
@@ -1564,7 +1566,7 @@ def transpiler_settings(**settings) -> ContextManager[None]:
 
 
 @contextmanager
-def circuit_scheduler_settings(**settings) -> ContextManager[None]:
+def circuit_scheduler_settings(**settings) -> Generator[None, None, None]:
     """Set the currently active circuit scheduler settings for this context.
 
     Examples:
@@ -1599,7 +1601,7 @@ def circuit_scheduler_settings(**settings) -> ContextManager[None]:
 
 
 @contextmanager
-def phase_offset(phase: float, *channels: chans.PulseChannel) -> ContextManager[None]:
+def phase_offset(phase: float, *channels: chans.PulseChannel) -> Generator[None, None, None]:
     """Shift the phase of input channels on entry into context and undo on exit.
 
     Examples:
