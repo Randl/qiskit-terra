@@ -11,11 +11,14 @@
 # that they have been altered from the originals.
 
 """Backend Configuration Classes."""
+from __future__ import annotations
+
 import re
 import copy
 import numbers
-from typing import Dict, List, Any, Iterable, Tuple, Union
 from collections import defaultdict
+from collections.abc import Iterable
+from typing import Any
 
 from qiskit.exceptions import QiskitError
 from qiskit.providers.exceptions import BackendConfigurationError
@@ -500,7 +503,7 @@ class BackendConfiguration(QasmBackendConfiguration):
 
 class PulseBackendConfiguration(QasmBackendConfiguration):
     """Static configuration state for an OpenPulse enabled backend. This contains information
-    about the set up of the device which can be useful for building Pulse programs.
+    about the set-up of the device which can be useful for building Pulse programs.
     """
 
     def __init__(
@@ -508,7 +511,7 @@ class PulseBackendConfiguration(QasmBackendConfiguration):
         backend_name: str,
         backend_version: str,
         n_qubits: int,
-        basis_gates: List[str],
+        basis_gates: list[str],
         gates: GateConfig,
         local: bool,
         simulator: bool,
@@ -518,16 +521,16 @@ class PulseBackendConfiguration(QasmBackendConfiguration):
         max_shots: int,
         coupling_map,
         n_uchannels: int,
-        u_channel_lo: List[List[UchannelLO]],
-        meas_levels: List[int],
-        qubit_lo_range: List[List[float]],
-        meas_lo_range: List[List[float]],
+        u_channel_lo: list[list[UchannelLO]],
+        meas_levels: list[int],
+        qubit_lo_range: list[list[float]],
+        meas_lo_range: list[list[float]],
         dt: float,
         dtm: float,
-        rep_times: List[float],
-        meas_kernels: List[str],
-        discriminators: List[str],
-        hamiltonian: Dict[str, Any] = None,
+        rep_times: list[float],
+        meas_kernels: list[str],
+        discriminators: list[str],
+        hamiltonian: dict[str, Any] = None,
         channel_bandwidth=None,
         acquisition_latency=None,
         conditional_latency=None,
@@ -542,7 +545,7 @@ class PulseBackendConfiguration(QasmBackendConfiguration):
         display_name=None,
         description=None,
         tags=None,
-        channels: Dict[str, Any] = None,
+        channels: dict[str, Any] = None,
         **kwargs,
     ):
         """
@@ -787,7 +790,7 @@ class PulseBackendConfiguration(QasmBackendConfiguration):
         return 1.0 / self.dt
 
     @property
-    def control_channels(self) -> Dict[Tuple[int, ...], List]:
+    def control_channels(self) -> dict[tuple[int, ...], list]:
         """Return the control channels"""
         return self._control_channels
 
@@ -839,7 +842,7 @@ class PulseBackendConfiguration(QasmBackendConfiguration):
             "ControlChannels determined by qubit indices."
         ),
     )
-    def control(self, qubits: Iterable[int] = None, channel: int = None) -> List[ControlChannel]:
+    def control(self, qubits: Iterable[int] = None, channel: int = None) -> list[ControlChannel]:
         """
         Return the secondary drive channel for the given qubit -- typically utilized for
         controlling multiqubit interactions. This channel is derived from other channels.
@@ -872,7 +875,7 @@ class PulseBackendConfiguration(QasmBackendConfiguration):
                 f"This backend - '{self.backend_name}' does not provide channel information."
             ) from ex
 
-    def get_channel_qubits(self, channel: Channel) -> List[int]:
+    def get_channel_qubits(self, channel: Channel) -> list[int]:
         """
         Return a list of indices for qubits which are operated on directly by the given ``channel``.
 
@@ -892,7 +895,7 @@ class PulseBackendConfiguration(QasmBackendConfiguration):
                 f"This backend - '{self.backend_name}' does not provide channel information."
             ) from ex
 
-    def get_qubit_channels(self, qubit: Union[int, Iterable[int]]) -> List[Channel]:
+    def get_qubit_channels(self, qubit: int | Iterable[int]) -> list[Channel]:
         r"""Return a list of channels which operate on the given ``qubit``.
 
         Raises:
@@ -923,7 +926,7 @@ class PulseBackendConfiguration(QasmBackendConfiguration):
                 f"This backend - '{self.backend_name}' does not provide channel information."
             ) from ex
 
-    def describe(self, channel: ControlChannel) -> Dict[DriveChannel, complex]:
+    def describe(self, channel: ControlChannel) -> dict[DriveChannel, complex]:
         """
         Return a basic description of the channel dependency. Derived channels are given weights
         which describe how their frames are linked to other frames.
@@ -953,7 +956,13 @@ class PulseBackendConfiguration(QasmBackendConfiguration):
             result[DriveChannel(u_chan_lo.q)] = u_chan_lo.scale
         return result
 
-    def _parse_channels(self, channels: Dict[str, Any]) -> Dict[Any, Any]:
+    def _parse_channels(
+        self, channels: dict[str, Any]
+    ) -> tuple[
+        dict[tuple, list[int]],
+        dict[DriveChannel | ControlChannel | MeasureChannel | AcquireChannel, list],
+        dict[tuple, list[int]],
+    ]:
         r"""
         Generates a dictionaries of ``Channel``\s, and tuple of qubit(s) they operate on.
 
@@ -967,9 +976,11 @@ class PulseBackendConfiguration(QasmBackendConfiguration):
             control_channels: Dictionary mapping tuple of qubit(s), to list of
                 ``ControlChannel``\s.
         """
-        qubit_channel_map = defaultdict(list)
-        channel_qubit_map = defaultdict(list)
-        control_channels = defaultdict(list)
+        qubit_channel_map: dict[tuple, list[int]] = defaultdict(list)
+        channel_qubit_map: dict[
+            DriveChannel | ControlChannel | MeasureChannel | AcquireChannel, list
+        ] = defaultdict(list)
+        control_channels: dict[tuple, list[int]] = defaultdict(list)
         channels_dict = {
             DriveChannel.prefix: DriveChannel,
             ControlChannel.prefix: ControlChannel,
@@ -987,7 +998,7 @@ class PulseBackendConfiguration(QasmBackendConfiguration):
                     control_channels[qubits].append(channel_type(index))
         return dict(qubit_channel_map), dict(channel_qubit_map), dict(control_channels)
 
-    def _get_channel_prefix_index(self, channel: str) -> Tuple[Union[str, Any], int]:
+    def _get_channel_prefix_index(self, channel: str) -> tuple[str | Any, int]:
         """Return channel prefix and index from the given ``channel``.
 
         Args:

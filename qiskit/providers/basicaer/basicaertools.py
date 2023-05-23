@@ -13,9 +13,10 @@
 """Contains functions used by the basic aer simulators.
 
 """
+from __future__ import annotations
 
 from string import ascii_uppercase, ascii_lowercase
-from typing import List, Optional, Type
+from typing import Type
 
 import numpy as np
 
@@ -27,7 +28,7 @@ from qiskit.exceptions import QiskitError
 SINGLE_QUBIT_GATES = ("U", "u1", "u2", "u3", "rz", "sx", "x")
 
 
-def single_gate_matrix(gate: str, params: Optional[List[float]] = None):
+def single_gate_matrix(gate: str, params: list[float] | None = None):
     """Get the matrix for a single qubit.
 
     Args:

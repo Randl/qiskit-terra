@@ -11,6 +11,7 @@
 # that they have been altered from the originals.
 
 """Backend Properties classes."""
+from __future__ import annotations
 
 from __future__ import annotations
 import copy
