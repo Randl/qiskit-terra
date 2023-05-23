@@ -20,6 +20,7 @@ parameter constraints.
 from __future__ import annotations
 import functools
 import warnings
+from collections.abc import Mapping
 from typing import Any, Dict, Optional, Union, Callable, Tuple
 from copy import deepcopy
 
@@ -404,12 +405,12 @@ class SymbolicPulse(Pulse):
         self,
         pulse_type: str,
         duration: Union[ParameterExpression, int],
-        parameters: Optional[Dict[str, Union[ParameterExpression, complex]]] = None,
+        parameters: Mapping[str, Union[ParameterExpression, complex]] | None = None,
         name: Optional[str] = None,
-        limit_amplitude: Optional[bool] = None,
-        envelope: Optional[sym.Expr] = None,
-        constraints: Optional[sym.Expr] = None,
-        valid_amp_conditions: Optional[sym.Expr] = None,
+        limit_amplitude: bool | None = None,
+        envelope: sym.Expr | None = None,
+        constraints: sym.Expr | None = None,
+        valid_amp_conditions: sym.Expr | None = None,
     ):
         """Create a parametric pulse.
 
@@ -613,9 +614,9 @@ class ScalableSymbolicPulse(SymbolicPulse):
         parameters: Optional[Dict[str, Union[ParameterExpression, complex]]] = None,
         name: Optional[str] = None,
         limit_amplitude: Optional[bool] = None,
-        envelope: Optional[sym.Expr] = None,
-        constraints: Optional[sym.Expr] = None,
-        valid_amp_conditions: Optional[sym.Expr] = None,
+        envelope: sym.Expr | None = None,
+        constraints: sym.Expr | None = None,
+        valid_amp_conditions: sym.Expr | None = None,
     ):
         """Create a scalable symbolic pulse.
 
@@ -1090,9 +1091,9 @@ def gaussian_square_echo(
     The Gaussian Square Echo pulse is composed of three pulses. First, a Gaussian Square pulse
     :math:`f_{echo}(x)` with amplitude ``amp`` and phase ``angle`` playing for half duration,
     followed by a second Gaussian Square pulse :math:`-f_{echo}(x)` with opposite amplitude
-    and same phase playing for the rest of the duration. Third a Gaussian Square pulse 
+    and same phase playing for the rest of the duration. Third a Gaussian Square pulse
     :math:`f_{active}(x)` with amplitude ``active_amp`` and phase ``active_angle``
-    playing for the entire duration. The Gaussian Square Echo pulse :math:`g_e()` 
+    playing for the entire duration. The Gaussian Square Echo pulse :math:`g_e()`
     can be written as:
 
     .. math::
@@ -1104,11 +1105,11 @@ def gaussian_square_echo(
                 & \\frac{\\text{duration}}{2} < x\
         \\end{cases}\\\\
 
-    One case where this pulse can be used is when implementing a direct CNOT gate with 
-    a cross-resonance superconducting qubit architecture. When applying this pulse to 
-    the target qubit, the active portion can be used to cancel IX terms from the 
+    One case where this pulse can be used is when implementing a direct CNOT gate with
+    a cross-resonance superconducting qubit architecture. When applying this pulse to
+    the target qubit, the active portion can be used to cancel IX terms from the
     cross-resonance drive while the echo portion can reduce the impact of a static ZZ coupling.
-    
+
     Exactly one of the ``risefall_sigma_ratio`` and ``width`` parameters has to be specified.
 
     If ``risefall_sigma_ratio`` is not ``None`` and ``width`` is ``None``:
@@ -1127,10 +1128,10 @@ def gaussian_square_echo(
 
         .. _citation1: https://iopscience.iop.org/article/10.1088/2058-9565/abe519
 
-        .. |citation1| replace:: *Jurcevic, P., Javadi-Abhari, A., Bishop, L. S., 
-            Lauer, I., Bogorin, D. F., Brink, M., Capelluto, L., G{\"u}nl{\"u}k, O., 
+        .. |citation1| replace:: *Jurcevic, P., Javadi-Abhari, A., Bishop, L. S.,
+            Lauer, I., Bogorin, D. F., Brink, M., Capelluto, L., G{\"u}nl{\"u}k, O.,
             Itoko, T., Kanazawa, N. & others
-            Demonstration of quantum volume 64 on a superconducting quantum 
+            Demonstration of quantum volume 64 on a superconducting quantum
             computing system. (Section V)*
     Args:
         duration: Pulse length in terms of the sampling period `dt`.

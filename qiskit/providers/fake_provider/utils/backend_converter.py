@@ -28,7 +28,9 @@ from qiskit.circuit.reset import Reset
 from qiskit.providers.models.pulsedefaults import PulseDefaults
 
 
-def convert_to_target(conf_dict: dict, props_dict: dict = None, defs_dict: dict = None) -> Target:
+def convert_to_target(
+    conf_dict: dict, props_dict: dict | None = None, defs_dict: dict | None = None
+) -> Target:
     """Uses configuration, properties and pulse defaults dicts
     to construct and return Target class.
     """
