@@ -11,12 +11,13 @@
 # that they have been altered from the originals.
 
 """A module for visualizing device coupling maps"""
+from __future__ import annotations
 
 import math
-from typing import List
 
 import numpy as np
 import rustworkx as rx
+from matplotlib.axes import Axes
 
 from qiskit.exceptions import QiskitError
 from qiskit.utils import optionals as _optionals
@@ -974,20 +975,20 @@ def plot_gate_map(
 @_optionals.HAS_MATPLOTLIB.require_in_call
 def plot_coupling_map(
     num_qubits: int,
-    qubit_coordinates: List[List[int]],
-    coupling_map: List[List[int]],
-    figsize=None,
-    plot_directed=False,
-    label_qubits=True,
-    qubit_size=None,
-    line_width=4,
-    font_size=None,
-    qubit_color=None,
-    qubit_labels=None,
-    line_color=None,
-    font_color="w",
-    ax=None,
-    filename=None,
+    qubit_coordinates: list[list[int]],
+    coupling_map: list[list[int]],
+    figsize: tuple[float, float] | None = None,
+    plot_directed: bool = False,
+    label_qubits: bool = True,
+    qubit_size: float | None = None,
+    line_width: float = 4.0,
+    font_size: int | None = None,
+    qubit_color: list | None = None,
+    qubit_labels: list | None = None,
+    line_color: list | None = None,
+    font_color: str = "w",
+    ax: Axes | None = None,
+    filename: str | None = None,
 ):
     """Plots an arbitrary coupling map of qubits (embedded in a plane).
 

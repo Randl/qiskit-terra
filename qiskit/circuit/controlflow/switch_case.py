@@ -17,7 +17,8 @@ from __future__ import annotations
 __all__ = ("SwitchCaseOp", "CASE_DEFAULT")
 
 import contextlib
-from typing import Union, Iterable, Any, Tuple, Optional, List, Literal
+from collections.abc import Iterable
+from typing import Any
 
 from qiskit.circuit import ClassicalRegister, Clbit, QuantumCircuit
 from qiskit.circuit.exceptions import CircuitError
@@ -66,10 +67,10 @@ class SwitchCaseOp(ControlFlowOp):
 
     def __init__(
         self,
-        target: Union[Clbit, ClassicalRegister],
-        cases: Iterable[Tuple[Any, QuantumCircuit]],
+        target: Clbit | ClassicalRegister,
+        cases: Iterable[tuple[Any, QuantumCircuit]],
         *,
-        label: Optional[str] = None,
+        label: str | None = None,
     ):
         if not isinstance(target, (Clbit, ClassicalRegister)):
             raise CircuitError("the switch target must be a classical bit or register")
@@ -85,7 +86,7 @@ class SwitchCaseOp(ControlFlowOp):
         us more easily track the case of multiple labels pointing to the same circuit object, so
         it's easier for things like `assign_parameters`, which need to touch each circuit object
         exactly once, to function."""
-        self._label_spec: List[Tuple[Union[int, Literal[CASE_DEFAULT]], ...]] = []
+        self._label_spec: list[tuple[int | _DefaultCaseType, ...]] = []
         """List of the normalised jump value specifiers.  This is a list of tuples, where each tuple
         contains the values, and the indexing is the same as the values of `_case_map` and
         `_params`."""
@@ -134,7 +135,7 @@ class SwitchCaseOp(ControlFlowOp):
             for labels_self, labels_other in zip(self._label_spec, other._label_spec)
         )
 
-    def cases_specifier(self) -> Iterable[Tuple[Tuple, QuantumCircuit]]:
+    def cases_specifier(self) -> Iterable[tuple[tuple, QuantumCircuit]]:
         """Return an iterable where each element is a 2-tuple whose first element is a tuple of
         jump values, and whose second is the single circuit block that is associated with those
         values.
@@ -193,10 +194,10 @@ class SwitchCasePlaceholder(InstructionPlaceholder):
 
     def __init__(
         self,
-        target: Union[Clbit, ClassicalRegister],
-        cases: List[Tuple[Any, ControlFlowBuilderBlock]],
+        target: Clbit | ClassicalRegister,
+        cases: list[tuple[Any, ControlFlowBuilderBlock]],
         *,
-        label: Optional[str] = None,
+        label: str | None = None,
     ):
         self.__target = target
         self.__cases = cases
@@ -280,26 +281,24 @@ class SwitchContext:
     def __init__(
         self,
         circuit: QuantumCircuit,
-        target: Union[Clbit, ClassicalRegister],
+        target: Clbit | ClassicalRegister,
         *,
         in_loop: bool,
-        label: Optional[str] = None,
+        label: str | None = None,
     ):
         self.circuit = circuit
         self.target = target
         self.in_loop = in_loop
         self.complete = False
         self._op_label = label
-        self._cases: List[Tuple[Tuple[Any, ...], ControlFlowBuilderBlock]] = []
-        self._label_set = set()
+        self._cases: list[tuple[tuple[Any, ...], ControlFlowBuilderBlock]] = []
+        self._label_set: set[tuple[int | _DefaultCaseType, ...]] = set()
 
-    def label_in_use(self, label):
+    def label_in_use(self, label) -> bool:
         """Return whether a case label is already accounted for in the switch statement."""
         return label in self._label_set
 
-    def add_case(
-        self, labels: Tuple[Union[int, Literal[CASE_DEFAULT]], ...], block: ControlFlowBuilderBlock
-    ):
+    def add_case(self, labels: tuple[int | _DefaultCaseType, ...], block: ControlFlowBuilderBlock):
         """Add a sequence of conditions and the single block that should be run if they are
         triggered to the context.  The labels are assumed to have already been validated using
         :meth:`label_in_use`."""

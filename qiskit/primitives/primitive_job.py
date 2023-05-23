@@ -12,9 +12,11 @@
 """
 Job implementation for the reference implementations of Primitives.
 """
+from __future__ import annotations
 
 import uuid
-from concurrent.futures import ThreadPoolExecutor
+from collections.abc import Callable
+from concurrent.futures import ThreadPoolExecutor, Future
 from typing import Generic, TypeVar
 
 from qiskit.providers import JobError, JobStatus, JobV1
@@ -29,14 +31,14 @@ class PrimitiveJob(JobV1, Generic[T]):
     PrimitiveJob class for the reference implemetations of Primitives.
     """
 
-    def __init__(self, function, *args, **kwargs):
+    def __init__(self, function: Callable[..., T], *args, **kwargs):
         """
         Args:
             function: a callable function to execute the job.
         """
         job_id = str(uuid.uuid4())
         super().__init__(None, job_id)
-        self._future = None
+        self._future: Future | None = None
         self._function = function
         self._args = args
         self._kwargs = kwargs

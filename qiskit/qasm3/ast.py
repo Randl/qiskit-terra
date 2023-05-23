@@ -14,8 +14,9 @@
 
 """QASM3 AST Nodes"""
 
+from __future__ import annotations
 import enum
-from typing import Optional, List, Union, Iterable, Tuple
+from collections.abc import Iterable
 
 
 class ASTNode:
@@ -131,7 +132,7 @@ class FloatType(ClassicalType, enum.Enum):
 class IntType(ClassicalType):
     """Type information for a signed integer."""
 
-    def __init__(self, size: Optional[int] = None):
+    def __init__(self, size: int | None = None):
         self.size = size
 
 
@@ -184,9 +185,9 @@ class Range(ASTNode):
 
     def __init__(
         self,
-        start: Optional[Expression] = None,
-        end: Optional[Expression] = None,
-        step: Optional[Expression] = None,
+        start: Expression | None = None,
+        end: Expression | None = None,
+        step: Expression | None = None,
     ):
         self.start = start
         self.step = step
@@ -198,7 +199,7 @@ class SubscriptedIdentifier(Identifier):
     An identifier with subscripted access.
     """
 
-    def __init__(self, identifier: Identifier, subscript: Union[Range, Expression]):
+    def __init__(self, identifier: Identifier, subscript: Range | Expression):
         self.identifier = identifier
         self.subscript = subscript
 
@@ -210,7 +211,7 @@ class IndexSet(ASTNode):
         { Expression (, Expression)* }
     """
 
-    def __init__(self, values: List[Expression]):
+    def __init__(self, values: list[Expression]):
         self.values = values
 
 
@@ -228,7 +229,7 @@ class QuantumMeasurement(ASTNode):
         : 'measure' indexIdentifierList
     """
 
-    def __init__(self, identifierList: List[Identifier]):
+    def __init__(self, identifierList: list[Identifier]):
         self.identifierList = identifierList
 
 
@@ -332,7 +333,7 @@ class AliasStatement(ASTNode):
         : 'let' Identifier EQUALS indexIdentifier SEMICOLON
     """
 
-    def __init__(self, identifier: Identifier, concatenation: List[Identifier]):
+    def __init__(self, identifier: Identifier, concatenation: list[Identifier]):
         self.identifier = identifier
         self.concatenation = concatenation
 
@@ -349,7 +350,7 @@ class QuantumGateModifierName(enum.Enum):
 class QuantumGateModifier(ASTNode):
     """A modifier of a gate. For example, in ``ctrl @ x $0``, the ``ctrl @`` is the modifier."""
 
-    def __init__(self, modifier: QuantumGateModifierName, argument: Optional[Expression] = None):
+    def __init__(self, modifier: QuantumGateModifierName, argument: Expression | None = None):
         self.modifier = modifier
         self.argument = argument
 
@@ -363,9 +364,9 @@ class QuantumGateCall(QuantumInstruction):
     def __init__(
         self,
         quantumGateName: Identifier,
-        indexIdentifierList: List[Identifier],
-        parameters: List[Expression] = None,
-        modifiers: Optional[List[QuantumGateModifier]] = None,
+        indexIdentifierList: list[Identifier],
+        parameters: list[Expression] | None = None,
+        modifiers: list[QuantumGateModifier] | None = None,
     ):
         self.quantumGateName = quantumGateName
         self.indexIdentifierList = indexIdentifierList
@@ -382,8 +383,8 @@ class SubroutineCall(ExpressionTerminator):
     def __init__(
         self,
         identifier: Identifier,
-        indexIdentifierList: List[Identifier],
-        expressionList: List[Expression] = None,
+        indexIdentifierList: list[Identifier],
+        expressionList: list[Expression] | None = None,
     ):
         self.identifier = identifier
         self.indexIdentifierList = indexIdentifierList
@@ -396,7 +397,7 @@ class QuantumBarrier(QuantumInstruction):
         : 'barrier' indexIdentifierList
     """
 
-    def __init__(self, indexIdentifierList: List[Identifier]):
+    def __init__(self, indexIdentifierList: list[Identifier]):
         self.indexIdentifierList = indexIdentifierList
 
 
@@ -410,7 +411,7 @@ class QuantumReset(QuantumInstruction):
 class QuantumDelay(QuantumInstruction):
     """A built-in ``delay[duration] q0;`` statement."""
 
-    def __init__(self, duration: Expression, qubits: List[Identifier]):
+    def __init__(self, duration: Expression, qubits: list[Identifier]):
         self.duration = duration
         self.qubits = qubits
 
@@ -422,7 +423,7 @@ class ProgramBlock(ASTNode):
         | LBRACE(statement | controlDirective) * RBRACE
     """
 
-    def __init__(self, statements: List[Statement]):
+    def __init__(self, statements: list[Statement]):
         self.statements = statements
 
 
@@ -470,8 +471,8 @@ class QuantumGateSignature(ASTNode):
     def __init__(
         self,
         name: Identifier,
-        qargList: List[Identifier],
-        params: Optional[List[Identifier]] = None,
+        qargList: list[Identifier],
+        params: list[Identifier] | None = None,
     ):
         self.name = name
         self.qargList = qargList
@@ -528,8 +529,8 @@ class CalibrationDefinition(Statement):
     def __init__(
         self,
         name: Identifier,
-        identifierList: List[Identifier],
-        calibrationArgumentList: Optional[List[CalibrationArgument]] = None,
+        identifierList: list[Identifier],
+        calibrationArgumentList: list[CalibrationArgument] | None = None,
     ):
         self.name = name
         self.identifierList = identifierList
@@ -600,7 +601,7 @@ class ForLoopStatement(Statement):
 
     def __init__(
         self,
-        indexset: Union[Identifier, IndexSet, Range],
+        indexset: Identifier | IndexSet | Range,
         parameter: Identifier,
         body: ProgramBlock,
     ):
@@ -657,7 +658,7 @@ class SwitchStatement(Statement):
     """AST node for the proposed 'switch-case' extension to OpenQASM 3."""
 
     def __init__(
-        self, target: Expression, cases: Iterable[Tuple[Iterable[Expression], ProgramBlock]]
+        self, target: Expression, cases: Iterable[tuple[Iterable[Expression], ProgramBlock]]
     ):
         self.target = target
         self.cases = [(tuple(values), case) for values, case in cases]

@@ -15,7 +15,8 @@
 from __future__ import annotations
 import copy
 import datetime
-from typing import Any, Iterable, Tuple, Union, Dict, List
+from collections.abc import Iterable
+from typing import Any
 import dateutil.parser
 
 from qiskit.providers.exceptions import BackendPropertyError
@@ -32,7 +33,7 @@ class Nduv:
         value: value.
     """
 
-    def __init__(self, date, name: str, unit: str, value):
+    def __init__(self, date: datetime.datetime, name: str, unit: str, value):
         """Initialize a new name-date-unit-value object
 
         Args:
@@ -95,7 +96,7 @@ class Gate:
 
     _data = {}
 
-    def __init__(self, qubits, gate: str, parameters: List[Nduv], **kwargs):
+    def __init__(self, qubits, gate: str, parameters: list[Nduv], **kwargs):
         """Initialize a new Gate object
 
         Args:
@@ -169,12 +170,12 @@ class BackendProperties:
 
     def __init__(
         self,
-        backend_name,
-        backend_version,
-        last_update_date,
-        qubits,
-        gates: List[Gate],
-        general,
+        backend_name: str,
+        backend_version: str,
+        last_update_date: str | datetime.datetime,
+        qubits: list[list[Nduv]],
+        gates: list[Gate],
+        general: list[Nduv],
         **kwargs,
     ):
         """Initialize a BackendProperties instance.
@@ -204,13 +205,13 @@ class BackendProperties:
 
         self._qubits = {}
         for qubit, props in enumerate(qubits):
-            formatted_props = {}
+            formatted_props: dict[str, tuple[float, datetime.datetime]] = {}
             for prop in props:
                 value = self._apply_prefix(prop.value, prop.unit)
                 formatted_props[prop.name] = (value, prop.date)
                 self._qubits[qubit] = formatted_props
 
-        self._gates: Dict[str, Dict[Tuple, Dict[str, Tuple]]] = {}
+        self._gates: dict[str, dict[tuple, dict[str, tuple[float, datetime.datetime]]]] = {}
         for gate in gates:
             if gate.gate not in self._gates:
                 self._gates[gate.gate] = {}
@@ -285,8 +286,8 @@ class BackendProperties:
         return False
 
     def gate_property(
-        self, gate: str, qubits: Union[int, Iterable[int]] = None, name: str = None
-    ) -> Union[Tuple[Any, datetime.datetime], Dict[str, Tuple]]:
+        self, gate: str, qubits: int | Iterable[int] = None, name: str = None
+    ) -> tuple[float, datetime.datetime] | dict[str, tuple]:
         """
         Return the property of the given gate.
 
@@ -332,7 +333,7 @@ class BackendProperties:
                 faulty.append(gate)
         return faulty
 
-    def is_gate_operational(self, gate: str, qubits: Union[int, Iterable[int]] = None) -> bool:
+    def is_gate_operational(self, gate: str, qubits: int | Iterable[int] | None = None) -> bool:
         """
         Return the operational status of the given gate.
 
@@ -349,7 +350,7 @@ class BackendProperties:
             return bool(properties["operational"][0])
         return True  # if property operational not existent, then True.
 
-    def gate_error(self, gate: str, qubits: Union[int, Iterable[int]]) -> float:
+    def gate_error(self, gate: str, qubits: int | Iterable[int]) -> float:
         """
         Return gate error estimates from backend properties.
 
@@ -362,7 +363,7 @@ class BackendProperties:
         """
         return self.gate_property(gate, qubits, "gate_error")[0]  # Throw away datetime at index 1
 
-    def gate_length(self, gate: str, qubits: Union[int, Iterable[int]]) -> float:
+    def gate_length(self, gate: str, qubits: int | Iterable[int]) -> float:
         """
         Return the duration of the gate in units of seconds.
 

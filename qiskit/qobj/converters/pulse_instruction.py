@@ -19,7 +19,7 @@ import re
 import warnings
 from enum import Enum
 from functools import singledispatchmethod
-from typing import Union, List, Iterator, Optional
+from typing import Union, List, Iterator, Optional, Type
 import numpy as np
 
 from qiskit.circuit import Parameter, ParameterExpression
@@ -118,7 +118,7 @@ class InstructionToQobjConverter:
 
     def __init__(
         self,
-        qobj_model: PulseQobjInstruction,
+        qobj_model: Type[PulseQobjInstruction],
         **run_config,
     ):
         """Create new converter.

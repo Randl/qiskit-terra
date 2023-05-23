@@ -225,7 +225,7 @@ class AQGD(Optimizer):
         self._avg_objval = curr_avg
 
         # Update window of objective values
-        # (Remove earliest value)
+        # (Remove the earliest value)
         self._prev_loss.pop(0)
 
         if np.absolute(prev_avg - curr_avg) < tol:

@@ -238,14 +238,14 @@ class AmplitudeEstimation(AmplitudeEstimator):
         self, statevector
     ) -> tuple[dict[int, float], dict[int, float]]:
         # map measured results to estimates
-        measurements = OrderedDict()
+        measurements: dict[int, float] = OrderedDict()
         num_qubits = int(np.log2(len(statevector)))
         for i, amplitude in enumerate(statevector):
             b = bin(i)[2:].zfill(num_qubits)[::-1]
             y = int(b[: self._m], 2)  # chop off all except the evaluation qubits
             measurements[y] = measurements.get(y, 0.0) + np.abs(amplitude) ** 2
 
-        samples = OrderedDict()
+        samples: dict[float, float] = OrderedDict()
         for y, probability in measurements.items():
             if y >= int(self._M / 2):
                 y = self._M - y
@@ -260,7 +260,7 @@ class AmplitudeEstimation(AmplitudeEstimator):
     ) -> tuple[dict[int, float], dict[int, float]]:
         # construct probabilities
         measurements = OrderedDict()
-        samples = OrderedDict()
+        samples: dict[float, float] = OrderedDict()
         for state, probability in circuit_results.items():
             # reverts the last _m items
             y = int(state[: -self._m - 1 : -1], 2)

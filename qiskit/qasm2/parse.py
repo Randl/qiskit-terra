@@ -29,6 +29,7 @@ from qiskit.circuit import (
     Qubit,
     Reset,
     library as lib,
+    Clbit,
 )
 
 # This is the same C-extension problems as described in the `__init__.py` disable near the
@@ -194,8 +195,8 @@ def from_bytecode(bytecode, custom_instructions: Iterable[CustomInstruction]):
     # "protected access".
     # pylint: disable=protected-access
     qc = QuantumCircuit()
-    qubits = []
-    clbits = []
+    qubits: list[Qubit] = []
+    clbits: list[Clbit] = []
     gates = []
     has_u, has_cx = False, False
     for custom in custom_instructions:

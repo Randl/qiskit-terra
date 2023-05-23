@@ -57,7 +57,7 @@ def sequence(scheduled_circuit: QuantumCircuit, schedule_config: ScheduleConfig)
     meas_time = _meas_start_time()
 
     # restore start times
-    qubit_time_available = {}
+    qubit_time_available: dict[int, int] = {}
     start_times = []
     out_circ_pulse_defs = []
     for circ_pulse_def in circ_pulse_defs:

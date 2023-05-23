@@ -66,7 +66,7 @@ class _DiagonalEstimator(BaseEstimator):
         self.aggregation = aggregation
         self.callback = callback
         self._circuit_ids: dict[tuple, int] = {}
-        self._observable_ids: dict[tuple, int] = {}
+        self._observable_ids: dict[int, int] = {}
 
     def _run(
         self,

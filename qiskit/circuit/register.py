@@ -20,6 +20,8 @@ from __future__ import annotations
 import re
 import itertools
 import warnings
+from typing import Type
+
 import numpy as np
 
 from qiskit.circuit.exceptions import CircuitError
@@ -59,7 +61,7 @@ class Register:
     instances_counter = itertools.count()
     # Prefix to use for auto naming.
     prefix = "reg"
-    bit_type = None
+    bit_type: Type | None = None
 
     def __init__(self, size: int | None = None, name: str | None = None, bits=None):
         """Create a new generic register.
