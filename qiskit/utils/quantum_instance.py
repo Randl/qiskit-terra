@@ -11,8 +11,10 @@
 # that they have been altered from the originals.
 
 """Quantum Instance module"""
+from __future__ import annotations
 
-from typing import Optional, List, Union, Dict, Callable, Tuple, Any
+from collections.abc import Callable
+from typing import Any
 from enum import Enum
 import copy
 import logging
@@ -152,30 +154,30 @@ class QuantumInstance:
         self,
         backend,
         # run config
-        shots: Optional[int] = None,
-        seed_simulator: Optional[int] = None,
+        shots: int | None = None,
+        seed_simulator: int | None = None,
         # backend properties
-        basis_gates: Optional[List[str]] = None,
+        basis_gates: list[str] | None = None,
         coupling_map=None,
         # transpile
         initial_layout=None,
         pass_manager=None,
         bound_pass_manager=None,
-        seed_transpiler: Optional[int] = None,
-        optimization_level: Optional[int] = None,
+        seed_transpiler: int | None = None,
+        optimization_level: int | None = None,
         # simulation
-        backend_options: Optional[Dict] = None,
+        backend_options: dict | None = None,
         noise_model=None,
         # job
-        timeout: Optional[float] = None,
+        timeout: float | None = None,
         wait: float = 5.0,
         # others
         skip_qobj_validation: bool = True,
-        measurement_error_mitigation_cls: Optional[Callable] = None,
+        measurement_error_mitigation_cls: Callable | None = None,
         cals_matrix_refresh_period: int = 30,
-        measurement_error_mitigation_shots: Optional[int] = None,
-        job_callback: Optional[Callable] = None,
-        mit_pattern: Optional[List[List[int]]] = None,
+        measurement_error_mitigation_shots: int | None = None,
+        job_callback: Callable | None = None,
+        mit_pattern: list[list[int]] | None = None,
         max_job_retries: int = 50,
     ) -> None:
         """
@@ -324,7 +326,7 @@ class QuantumInstance:
                 )
         else:
             self._meas_error_mitigation_cls = measurement_error_mitigation_cls
-        self._meas_error_mitigation_fitters: Dict[str, Tuple[Any, float]] = {}
+        self._meas_error_mitigation_fitters: dict[str, tuple[Any, float]] = {}
         # TODO: support different fitting method in error mitigation?
         self._meas_error_mitigation_method = "least_squares"
         self._cals_matrix_refresh_period = cals_matrix_refresh_period
@@ -899,7 +901,7 @@ class QuantumInstance:
         """sets skip qobj validation flag"""
         self._skip_qobj_validation = new_value
 
-    def maybe_refresh_cals_matrix(self, timestamp: Optional[float] = None) -> bool:
+    def maybe_refresh_cals_matrix(self, timestamp: float | None = None) -> bool:
         """
         Calculate the time difference from the query of last time.
 
@@ -919,8 +921,8 @@ class QuantumInstance:
         return ret
 
     def cals_matrix(
-        self, qubit_index: Optional[List[int]] = None
-    ) -> Optional[Union[Tuple[np.ndarray, float], Dict[str, Tuple[np.ndarray, float]]]]:
+        self, qubit_index: list[int] | None = None
+    ) -> tuple[np.ndarray, float] | dict[str, tuple[np.ndarray, float]] | None:
         """
         Get the stored calibration matrices and its timestamp.
 

@@ -12,12 +12,13 @@
 
 """run circuits functions"""
 from __future__ import annotations
-from typing import Optional, Dict, Callable, List, Union, Tuple
+
 import sys
 import logging
 import time
 import copy
 import os
+from collections.abc import Callable
 
 from qiskit import QuantumCircuit, QuantumRegister, ClassicalRegister
 from qiskit.providers import Backend, JobStatus, JobError, Job
@@ -46,7 +47,7 @@ logger = logging.getLogger(__name__)
 )
 def find_regs_by_name(
     circuit: QuantumCircuit, name: str, qreg: bool = True
-) -> Optional[Union[QuantumRegister, ClassicalRegister]]:
+) -> QuantumRegister | ClassicalRegister | None:
     """Deprecated: Find the registers in the circuits.
 
     Args:
@@ -67,7 +68,7 @@ def find_regs_by_name(
     return found_reg
 
 
-def _combine_result_objects(results: List[Result]) -> Result:
+def _combine_result_objects(results: list[Result]) -> Result:
     """Temporary helper function.
 
     TODO: This function would be removed after Terra supports job with infinite circuits.
@@ -110,13 +111,13 @@ def _safe_get_job_status(job: Job, job_id: str, max_job_retries: int, wait: floa
     additional_msg="For code migration guidelines, visit https://qisk.it/qi_migration.",
 )
 def run_circuits(
-    circuits: Union[QuantumCircuit, List[QuantumCircuit]],
+    circuits: QuantumCircuit | list[QuantumCircuit],
     backend: Backend,
-    qjob_config: Dict,
-    backend_options: Optional[Dict] = None,
-    noise_config: Optional[Dict] = None,
-    run_config: Optional[Dict] = None,
-    job_callback: Optional[Callable] = None,
+    qjob_config: dict,
+    backend_options: dict | None = None,
+    noise_config: dict | None = None,
+    run_config: dict | None = None,
+    job_callback: Callable | None = None,
     max_job_retries: int = 50,
 ) -> Result:
     """
@@ -312,14 +313,14 @@ def run_circuits(
 
 
 def _safe_submit_circuits(
-    circuits: Union[QuantumCircuit, List[QuantumCircuit]],
+    circuits: QuantumCircuit | list[QuantumCircuit],
     backend: Backend,
-    qjob_config: Dict,
-    backend_options: Dict,
-    noise_config: Dict,
-    run_config: Dict,
+    qjob_config: dict,
+    backend_options: dict,
+    noise_config: dict,
+    run_config: dict,
     max_job_retries: int,
-) -> Tuple[Job, str]:
+) -> tuple[Job, str]:
     # assure get job ids
     for _ in range(max_job_retries):
         try:
@@ -382,10 +383,10 @@ def _safe_submit_circuits(
 
 def _run_circuits_on_backend(
     backend: Backend,
-    circuits: Union[QuantumCircuit, List[QuantumCircuit]],
-    backend_options: Dict,
-    noise_config: Dict,
-    run_config: Dict,
+    circuits: QuantumCircuit | list[QuantumCircuit],
+    backend_options: dict,
+    noise_config: dict,
+    run_config: dict,
 ) -> Job:
     """Run on backend."""
     run_kwargs = {}

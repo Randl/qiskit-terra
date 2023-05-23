@@ -14,7 +14,7 @@
 from __future__ import annotations
 
 import copy
-from typing import List, Optional, Tuple, Dict, Callable, Type, Any
+from typing import Type, Any
 
 from qiskit import compiler
 from qiskit.providers import Backend
@@ -36,8 +36,8 @@ from qiskit.utils.deprecation import deprecate_func
     additional_msg="For code migration guidelines, visit https://qisk.it/qi_migration.",
 )
 def get_measured_qubits(
-    transpiled_circuits: List[QuantumCircuit],
-) -> Tuple[List[int], Dict[str, List[int]]]:
+    transpiled_circuits: list[QuantumCircuit],
+) -> tuple[list[int], dict[str, list[int]]]:
     """
     Deprecated: Retrieve the measured qubits from transpiled circuits.
 
@@ -52,7 +52,7 @@ def get_measured_qubits(
         QiskitError: invalid qubit mapping
     """
     qubit_index = None
-    qubit_mappings: Dict[str, List[int]] = {}
+    qubit_mappings: dict[str, list[int]] = {}
     for idx, qc in enumerate(transpiled_circuits):
         measured_qubits = []
         for instruction in qc.data:
@@ -83,7 +83,7 @@ def get_measured_qubits(
     since="0.24.0",
     additional_msg="For code migration guidelines, visit https://qisk.it/qi_migration.",
 )
-def get_measured_qubits_from_qobj(qobj: QasmQobj) -> Tuple[List[int], Dict[str, List[int]]]:
+def get_measured_qubits_from_qobj(qobj: QasmQobj) -> tuple[list[int], dict[str, list[int]]]:
     """
     Deprecated: Retrieve the measured qubits from transpiled circuits.
 
@@ -99,7 +99,7 @@ def get_measured_qubits_from_qobj(qobj: QasmQobj) -> Tuple[List[int], Dict[str, 
     """
 
     qubit_index = None
-    qubit_mappings: Dict[str, List[int]] = {}
+    qubit_mappings: dict[str, list[int]] = {}
 
     for idx, exp in enumerate(qobj.experiments):
         measured_qubits = []
@@ -129,13 +129,13 @@ def get_measured_qubits_from_qobj(qobj: QasmQobj) -> Tuple[List[int], Dict[str, 
     additional_msg="For code migration guidelines, visit https://qisk.it/qi_migration.",
 )
 def build_measurement_error_mitigation_circuits(
-    qubit_list: List[int],
+    qubit_list: list[int],
     fitter_cls: Type[CompleteMeasFitter] | Type[TensoredMeasFitter],
     backend: Backend,
     backend_config: dict[str, Any] | None = None,
     compile_config: dict[str, Any] | None = None,
     mit_pattern: list[list[int]] | None = None,
-) -> Tuple[QuantumCircuit, list[str], list[str]]:
+) -> tuple[QuantumCircuit, list[str], list[str]]:
     """Deprecated: Build measurement error mitigation circuits
     Args:
         qubit_list: list of ordered qubits used in the algorithm
@@ -208,14 +208,14 @@ def build_measurement_error_mitigation_circuits(
     additional_msg="For code migration guidelines, visit https://qisk.it/qi_migration.",
 )
 def build_measurement_error_mitigation_qobj(
-    qubit_list: List[int],
-    fitter_cls: Callable,
+    qubit_list: list[int],
+    fitter_cls: Type[CompleteMeasFitter] | Type[TensoredMeasFitter],
     backend: Backend,
-    backend_config: Optional[Dict] = None,
-    compile_config: Optional[Dict] = None,
-    run_config: Optional[RunConfig] = None,
-    mit_pattern: Optional[List[List[int]]] = None,
-) -> Tuple[QasmQobj, List[str], List[str]]:
+    backend_config: dict | None = None,
+    compile_config: dict | None = None,
+    run_config: RunConfig | None = None,
+    mit_pattern: list[list[int]] | None = None,
+) -> tuple[QasmQobj, list[str], list[str]]:
     """
     Args:
         qubit_list: list of ordered qubits used in the algorithm

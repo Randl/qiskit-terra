@@ -22,7 +22,6 @@ Measurement correction filters.
 
 """
 from __future__ import annotations
-from typing import List, Dict, Any
 from copy import deepcopy
 
 import numpy as np
@@ -245,9 +244,9 @@ class TensoredFilter:
         """
 
         self._cal_matrices = cal_matrices
-        self._qubit_list_sizes: List[int] = []
-        self._indices_list: List[Dict[Any, Any]] = []
-        self._substate_labels_list: List[str] = []
+        self._qubit_list_sizes: list[int] = []
+        self._indices_list: list[dict[str, int]] = []
+        self._substate_labels_list: list[str] = []
         self.substate_labels_list = substate_labels_list
         self._mit_pattern = mit_pattern
 
@@ -267,7 +266,7 @@ class TensoredFilter:
         return self._substate_labels_list
 
     @substate_labels_list.setter
-    def substate_labels_list(self, new_substate_labels_list):
+    def substate_labels_list(self, new_substate_labels_list: list[str]):
         """Return _substate_labels_list"""
         self._substate_labels_list = new_substate_labels_list
 
@@ -279,7 +278,6 @@ class TensoredFilter:
         # get the indices in the calibration matrix
         self._indices_list = []
         for _, sub_labels in enumerate(self._substate_labels_list):
-
             self._indices_list.append({lab: ind for ind, lab in enumerate(sub_labels)})
 
     @property
@@ -474,7 +472,7 @@ class TensoredFilter:
 
         return new_count_dict
 
-    def flip_state(self, state: str, mat_index: int, flip_poses: List[int]) -> str:
+    def flip_state(self, state: str, mat_index: int, flip_poses: list[int]) -> str:
         """Flip the state according to the chosen qubit positions"""
         flip_poses = [pos for i, pos in enumerate(flip_poses) if (mat_index >> i) & 1]
         flip_poses = sorted(flip_poses)
@@ -487,7 +485,7 @@ class TensoredFilter:
         new_state += state[pos:]
         return new_state
 
-    def compute_index_of_cal_mat(self, state: str, pos_qubits: List[int], indices: dict) -> int:
+    def compute_index_of_cal_mat(self, state: str, pos_qubits: list[int], indices: dict) -> int:
         """Return the index of (pseudo inverse) calibration matrix for the input quantum state"""
         sub_state = ""
         for pos in pos_qubits:

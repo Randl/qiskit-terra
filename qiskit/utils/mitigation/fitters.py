@@ -18,9 +18,11 @@
 """
 Measurement correction fitters.
 """
-from typing import List, Any, Dict, Optional, Sequence
+from __future__ import annotations
+import typing
 import copy
 import re
+from collections.abc import Sequence
 
 import numpy as np
 
@@ -28,6 +30,9 @@ from qiskit import QiskitError
 from qiskit.utils.mitigation.circuits import count_keys
 from qiskit.utils.mitigation._filters import MeasurementFilter, TensoredFilter
 from qiskit.utils.deprecation import deprecate_func
+
+if typing.TYPE_CHECKING:
+    from qiskit.result import Result  # pylint: disable=cyclic-import
 
 
 class CompleteMeasFitter:
@@ -42,8 +47,8 @@ class CompleteMeasFitter:
     def __init__(
         self,
         results,
-        state_labels: List[str],
-        qubit_list: Optional[Sequence[int]] = None,
+        state_labels: list[str],
+        qubit_list: Sequence[int] | None = None,
         circlabel: str = "",
     ):
         """
@@ -109,7 +114,7 @@ class CompleteMeasFitter:
         """Return a measurement filter using the cal matrix."""
         return MeasurementFilter(self.cal_matrix, self.state_labels)
 
-    def add_data(self, new_results, rebuild_cal_matrix=True):
+    def add_data(self, new_results: list[Result] | Result, rebuild_cal_matrix=True):
         """
         Add measurement calibration data
 
@@ -226,8 +231,8 @@ class TensoredMeasFitter:
     def __init__(
         self,
         results,
-        mit_pattern: List[Sequence[int]],
-        substate_labels_list: List[List[str]] = None,
+        mit_pattern: list[Sequence[int]],
+        substate_labels_list: list[list[str]] | None = None,
         circlabel: str = "",
     ):
         """
@@ -263,16 +268,16 @@ class TensoredMeasFitter:
                 substate_labels_list
         """
 
-        self._result_list: List[Any] = []
+        self._result_list: list[Result] = []
         self._cal_matrices = None
         self._circlabel = circlabel
         self._mit_pattern = mit_pattern
 
         self._qubit_list_sizes = [len(qubit_list) for qubit_list in mit_pattern]
 
-        self._indices_list: List[Dict[Any, Any]] = []
+        self._indices_list: list[dict[str, int]] = []
         if substate_labels_list is None:
-            self._substate_labels_list = []
+            self._substate_labels_list: list[list[str]] = []
             for list_size in self._qubit_list_sizes:
                 self._substate_labels_list.append(count_keys(list_size))
         else:
@@ -311,7 +316,7 @@ class TensoredMeasFitter:
         """Return _qubit_list_sizes."""
         return sum(self._qubit_list_sizes)
 
-    def add_data(self, new_results, rebuild_cal_matrix=True):
+    def add_data(self, new_results: list[Result] | Result, rebuild_cal_matrix=True):
         """
         Add measurement calibration data
 
