@@ -14,7 +14,7 @@
 # pylint: disable=super-init-not-called
 
 """Module providing definitions of Pulse Qobj classes."""
-
+from __future__ import annotations
 import copy
 import pprint
 from typing import Union, List
@@ -542,7 +542,13 @@ class PulseLibraryItem:
 class PulseQobj:
     """A Pulse Qobj."""
 
-    def __init__(self, qobj_id, config, experiments, header=None):
+    def __init__(
+        self,
+        qobj_id: str,
+        config: PulseQobjConfig,
+        experiments: list,
+        header: QobjHeader | None = None,
+    ):
         """Instantiate a new Pulse Qobj Object.
 
         Each Pulse Qobj object is used to represent a single payload that will

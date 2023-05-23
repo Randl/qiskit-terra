@@ -105,10 +105,10 @@ def assemble_schedules(
 
 
 def _assemble_experiments(
-    schedules: List[Union[schedule.ScheduleComponent, Tuple[int, schedule.ScheduleComponent]]],
+    schedules: list[schedule.ScheduleComponent | tuple[int, schedule.ScheduleComponent]],
     lo_converter: converters.LoConfigConverter,
     run_config: RunConfig,
-) -> Tuple[List[qobj.PulseQobjExperiment], Dict[str, Any]]:
+) -> tuple[list[qobj.PulseQobjExperiment], dict[str, Any]]:
     """Assembles a list of schedules into PulseQobjExperiments, and returns related metadata that
     will be assembled into the Qobj configuration.
 
@@ -221,7 +221,7 @@ def _assemble_instructions(
     max_memory_slot = 0
     qobj_instructions = []
 
-    acquire_instruction_map = defaultdict(list)
+    acquire_instruction_map: dict[tuple[int, int], list[instructions.Acquire]] = defaultdict(list)
     for time, instruction in sched.instructions:
 
         if isinstance(instruction, instructions.Play):
@@ -278,8 +278,8 @@ def _assemble_instructions(
 
 
 def _validate_meas_map(
-    instruction_map: Dict[Tuple[int, instructions.Acquire], List[instructions.Acquire]],
-    meas_map: List[List[int]],
+    instruction_map: dict[tuple[int, int], list[instructions.Acquire]],
+    meas_map: list[list[int]],
 ) -> None:
     """Validate all qubits tied in ``meas_map`` are to be acquired.
 

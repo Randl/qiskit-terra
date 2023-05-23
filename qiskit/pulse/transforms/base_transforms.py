@@ -13,7 +13,10 @@
 
 # TODO: replace this with proper pulse transformation passes. Qiskit-terra/#6121
 
-from typing import Union, Iterable, Tuple
+from __future__ import annotations
+
+from collections.abc import Iterable
+from typing import Union, Tuple
 
 from qiskit.pulse.instructions import Instruction
 from qiskit.pulse.schedule import ScheduleBlock, Schedule
@@ -23,7 +26,7 @@ InstructionSched = Union[Tuple[int, Instruction], Instruction]
 
 
 def target_qobj_transform(
-    sched: Union[ScheduleBlock, Schedule, InstructionSched, Iterable[InstructionSched]],
+    sched: ScheduleBlock | Schedule | InstructionSched | Iterable[InstructionSched],
     remove_directives: bool = True,
 ) -> Schedule:
     """A basic pulse program transformation for OpenPulse API execution.

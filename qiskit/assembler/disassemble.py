@@ -11,6 +11,7 @@
 # that they have been altered from the originals.
 
 """Disassemble function for a qobj into a list of circuits and its config"""
+from __future__ import annotations
 from typing import Any, Dict, List, NewType, Tuple, Union
 import collections
 import math
@@ -265,7 +266,7 @@ def _disassemble_pulse_schedule(qobj) -> PulseModule:
     # extract schedule lo settings
     schedule_los = []
     for program in qobj.experiments:
-        program_los = {}
+        program_los: dict[pulse.DriveChannel | pulse.MeasureChannel, float] = {}
         if hasattr(program, "config"):
             if hasattr(program.config, "qubit_lo_freq"):
                 for i, lo in enumerate(program.config.qubit_lo_freq):
@@ -283,7 +284,7 @@ def _disassemble_pulse_schedule(qobj) -> PulseModule:
     return PulseModule((_experiments_to_schedules(qobj), run_config, user_qobj_header))
 
 
-def _experiments_to_schedules(qobj) -> List[pulse.Schedule]:
+def _experiments_to_schedules(qobj) -> list[pulse.Schedule]:
     """Return a list of :class:`qiskit.pulse.Schedule` object(s) from a qobj.
 
     Args:
