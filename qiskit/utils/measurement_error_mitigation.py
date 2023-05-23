@@ -11,9 +11,10 @@
 # that they have been altered from the originals.
 
 """Measurement error mitigation"""
+from __future__ import annotations
 
 import copy
-from typing import List, Optional, Tuple, Dict, Callable
+from typing import List, Optional, Tuple, Dict, Callable, Type, Any
 
 from qiskit import compiler
 from qiskit.providers import Backend
@@ -129,12 +130,12 @@ def get_measured_qubits_from_qobj(qobj: QasmQobj) -> Tuple[List[int], Dict[str, 
 )
 def build_measurement_error_mitigation_circuits(
     qubit_list: List[int],
-    fitter_cls: Callable,
+    fitter_cls: Type[CompleteMeasFitter] | Type[TensoredMeasFitter],
     backend: Backend,
-    backend_config: Optional[Dict] = None,
-    compile_config: Optional[Dict] = None,
-    mit_pattern: Optional[List[List[int]]] = None,
-) -> Tuple[QuantumCircuit, List[str], List[str]]:
+    backend_config: dict[str, Any] | None = None,
+    compile_config: dict[str, Any] | None = None,
+    mit_pattern: list[list[int]] | None = None,
+) -> Tuple[QuantumCircuit, list[str], list[str]]:
     """Deprecated: Build measurement error mitigation circuits
     Args:
         qubit_list: list of ordered qubits used in the algorithm

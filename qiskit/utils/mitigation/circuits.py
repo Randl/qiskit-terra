@@ -19,7 +19,9 @@ Measurement calibration circuits. To apply the measurement mitigation
 use the fitters to produce a filter.
 """
 from __future__ import annotations
-from typing import List, Tuple, Union, Any, Optional, Collection
+
+from collections.abc import Sequence
+from typing import Any
 from qiskit.utils.deprecation import deprecate_func
 
 
@@ -46,11 +48,11 @@ def count_keys(num_qubits: int) -> list[str]:
     additional_msg="For code migration guidelines, visit https://qisk.it/qi_migration.",
 )
 def complete_meas_cal(
-    qubit_list: list[int] | None = None,
+    qubit_list: Sequence[int] | None = None,
     qr: int | list | None = None,
     cr: int | list | None = None,
     circlabel: str = "",
-) -> tuple[list[Any], list[str]]:
+) -> tuple[list, list[str]]:
     """
     Deprecated: Return a list of measurement calibration circuits for the full
     Hilbert space.
@@ -127,11 +129,11 @@ def complete_meas_cal(
     additional_msg="For code migration guidelines, visit https://qisk.it/qi_migration.",
 )
 def tensored_meas_cal(
-    mit_pattern: Optional[List[List[int]]] = None,
-    qr: Optional[Union[int, Collection[Any]]] = None,
-    cr: Optional[Union[int, Collection[Any]]] = None,
+    mit_pattern: list[list[int]] | None = None,
+    qr: int | Sequence[Any] | None = None,
+    cr: int | Sequence[Any] | None = None,
     circlabel: str = "",
-) -> Tuple[List[Any], List[List[int]]]:
+) -> tuple[list[Any], list[list[int]]]:
     """
     Deprecated: Return a list of calibration circuits
 
