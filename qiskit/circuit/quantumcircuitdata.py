@@ -178,7 +178,7 @@ class QuantumCircuitData(MutableSequence):
         expanded_qargs = [self._circuit.qbit_argument_conversion(qarg) for qarg in qargs or []]
         expanded_cargs = [self._circuit.cbit_argument_conversion(carg) for carg in cargs or []]
 
-        if isinstance(operation, Instruction):
+        if isinstance(operation, Instruction):  # TODO: is this unreachable branch?
             broadcast_args = list(operation.broadcast_arguments(expanded_qargs, expanded_cargs))
         else:
             broadcast_args = list(

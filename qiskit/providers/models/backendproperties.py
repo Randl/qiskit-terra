@@ -12,12 +12,11 @@
 
 """Backend Properties classes."""
 from __future__ import annotations
-
-from __future__ import annotations
 import copy
 import datetime
 from collections.abc import Iterable
 from typing import Any
+
 import dateutil.parser
 
 from qiskit.providers.exceptions import BackendPropertyError
@@ -212,7 +211,9 @@ class BackendProperties:
                 formatted_props[prop.name] = (value, prop.date)
                 self._qubits[qubit] = formatted_props
 
-        self._gates: dict[str, dict[tuple, dict[str, tuple[float, datetime.datetime]]]] = {}
+        self._gates: dict[
+            str, dict[tuple[int, ...], dict[str, tuple[float, datetime.datetime]]]
+        ] = {}
         for gate in gates:
             if gate.gate not in self._gates:
                 self._gates[gate.gate] = {}
@@ -288,7 +289,7 @@ class BackendProperties:
 
     def gate_property(
         self, gate: str, qubits: int | Iterable[int] = None, name: str = None
-    ) -> tuple[float, datetime.datetime] | dict[str, tuple]:
+    ) -> tuple[float, datetime.datetime]:
         """
         Return the property of the given gate.
 
@@ -377,9 +378,7 @@ class BackendProperties:
         """
         return self.gate_property(gate, qubits, "gate_length")[0]  # Throw away datetime at index 1
 
-    def qubit_property(
-        self, qubit: int, name: str = None
-    ) -> tuple[Any, datetime.datetime] | dict[str, tuple]:
+    def qubit_property(self, qubit: int, name: str = None) -> tuple[Any, datetime.datetime]:
         """
         Return the property of the given qubit.
 
