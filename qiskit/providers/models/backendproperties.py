@@ -12,6 +12,7 @@
 
 """Backend Properties classes."""
 from __future__ import annotations
+
 import copy
 import datetime
 from collections.abc import Iterable
@@ -33,7 +34,7 @@ class Nduv:
         value: value.
     """
 
-    def __init__(self, date: datetime.datetime, name: str, unit: str, value):
+    def __init__(self, date: datetime.datetime, name: str, unit: str, value: float):
         """Initialize a new name-date-unit-value object
 
         Args:
@@ -61,7 +62,7 @@ class Nduv:
         """
         return cls(**data)
 
-    def to_dict(self):
+    def to_dict(self) -> dict[str, datetime.datetime | str | float]:
         """Return a dictionary format representation of the object.
 
         Returns:
@@ -75,7 +76,7 @@ class Nduv:
         }
         return out_dict
 
-    def __eq__(self, other):
+    def __eq__(self, other: object):
         if isinstance(other, Nduv):
             if self.to_dict() == other.to_dict():
                 return True
@@ -96,7 +97,7 @@ class Gate:
 
     _data = {}
 
-    def __init__(self, qubits, gate: str, parameters: list[Nduv], **kwargs):
+    def __init__(self, qubits: list[int], gate: str, parameters: list[Nduv], **kwargs):
         """Initialize a new Gate object
 
         Args:
@@ -119,7 +120,7 @@ class Gate:
             raise AttributeError(f"Attribute {name} is not defined") from ex
 
     @classmethod
-    def from_dict(cls, data):
+    def from_dict(cls, data: dict):
         """Create a new Gate object from a dictionary.
 
         Args:
@@ -138,7 +139,7 @@ class Gate:
                 in_data[key] = value
         return cls(**in_data)
 
-    def to_dict(self):
+    def to_dict(self) -> dict:
         """Return a dictionary format representation of the BackendStatus.
 
         Returns:
@@ -151,7 +152,7 @@ class Gate:
         out_dict.update(self._data)
         return out_dict
 
-    def __eq__(self, other):
+    def __eq__(self, other: object):
         if isinstance(other, Gate):
             if self.to_dict() == other.to_dict():
                 return True
