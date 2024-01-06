@@ -104,7 +104,7 @@ class XXDecomposer:
         self._check_embodiments()
 
     @staticmethod
-    def _default_embodiment(strength):
+    def _default_embodiment(strength: float) -> QuantumCircuit:
         """
         If the user does not provide a custom implementation of XX(strength), then this routine
         defines a default implementation using RZX.
@@ -136,7 +136,9 @@ class XXDecomposer:
                 )
 
     @staticmethod
-    def _best_decomposition(canonical_coordinate, available_strengths):
+    def _best_decomposition(
+        canonical_coordinate: list[float], available_strengths: dict[float, float]
+    ) -> dict[str, float | list[float] | np.ndarray]:
         """
         Finds the cheapest sequence of `available_strengths` which supports the best approximation
         to `canonical_coordinate`. Returns a dictionary with keys "cost", "point", and "operations".
@@ -146,7 +148,7 @@ class XXDecomposer:
               themselves normalized so that pi/2 represents CX = RZX(pi/2).
         """
         best_point, best_cost, best_sequence = [0, 0, 0], 1.0, []
-        priority_queue = []
+        priority_queue: list[tuple[float, list[float]]] = []
         heapq.heappush(priority_queue, (0, []))
         canonical_coordinate = np.array(canonical_coordinate)
 
@@ -198,7 +200,9 @@ class XXDecomposer:
         return len(best_sequence)
 
     @staticmethod
-    def _strength_to_infidelity(basis_fidelity, approximate=False):
+    def _strength_to_infidelity(
+        basis_fidelity: float | dict[float, float], approximate=False
+    ) -> dict[float, float]:
         """
         Converts a dictionary mapping XX strengths to fidelities to a dictionary mapping XX
         strengths to infidelities. Also supports one of the other formats Qiskit uses: if only a

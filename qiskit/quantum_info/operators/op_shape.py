@@ -117,7 +117,7 @@ class OpShape:
         return self._num_qargs_r
 
     @property
-    def num_qargs(self):
+    def num_qargs(self) -> tuple[int, int]:
         """Return a tuple of the number of left and right wires"""
         return self._num_qargs_l, self._num_qargs_r
 
@@ -152,7 +152,7 @@ class OpShape:
         num = self._num_qargs_r if qargs is None else len(qargs)
         return num * (2,)
 
-    def dims_l(self, qargs=None):
+    def dims_l(self, qargs=None) -> tuple[int, ...]:
         """Return tuple of output dimension for specified subsystems."""
         if self._dims_l:
             if qargs:
@@ -162,14 +162,14 @@ class OpShape:
         return num * (2,)
 
     @property
-    def _dim_r(self):
+    def _dim_r(self) -> int:
         """Return the total input dimension."""
         if self._dims_r:
             return reduce(mul, self._dims_r)
         return 2**self._num_qargs_r
 
     @property
-    def _dim_l(self):
+    def _dim_l(self) -> int:
         """Return the total input dimension."""
         if self._dims_l:
             return reduce(mul, self._dims_l)
@@ -179,7 +179,7 @@ class OpShape:
         """Raise an exception if shape is not valid for the OpShape"""
         return self._validate(shape, raise_exception=True)
 
-    def _validate(self, shape, raise_exception=False):
+    def _validate(self, shape, raise_exception=False) -> bool:
         """Validate OpShape against a matrix or vector shape."""
         # pylint: disable=too-many-return-statements
         ndim = len(shape)

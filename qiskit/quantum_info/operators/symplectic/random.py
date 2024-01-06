@@ -25,7 +25,7 @@ from .pauli_list import PauliList
 
 def random_pauli(
     num_qubits: int, group_phase: bool = False, seed: int | np.random.Generator | None = None
-):
+) -> Pauli:
     """Return a random Pauli.
 
     Args:
@@ -57,7 +57,7 @@ def random_pauli_list(
     size: int = 1,
     seed: int | np.random.Generator | None = None,
     phase: bool = True,
-):
+) -> PauliList:
     """Return a random PauliList.
 
     Args:
@@ -85,7 +85,7 @@ def random_pauli_list(
     return PauliList.from_symplectic(z, x)
 
 
-def random_clifford(num_qubits: int, seed: int | np.random.Generator | None = None):
+def random_clifford(num_qubits: int, seed: int | np.random.Generator | None = None) -> Clifford:
     """Return a random Clifford operator.
 
     The Clifford is sampled using the method of Reference [1].
@@ -156,7 +156,7 @@ def random_clifford(num_qubits: int, seed: int | np.random.Generator | None = No
     return Clifford(tableau, validate=False)
 
 
-def _sample_qmallows(n, rng=None):
+def _sample_qmallows(n, rng=None) -> tuple[np.ndarray, np.ndarray]:
     """Sample from the quantum Mallows distribution"""
 
     if rng is None:
@@ -184,7 +184,7 @@ def _sample_qmallows(n, rng=None):
     return had, perm
 
 
-def _fill_tril(mat, rng, symmetric=False):
+def _fill_tril(mat, rng, symmetric=False) -> None:
     """Add symmetric random ints to off diagonals"""
     dim = mat.shape[0]
     # Optimized for low dimensions

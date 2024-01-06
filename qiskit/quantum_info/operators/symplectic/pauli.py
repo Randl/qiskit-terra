@@ -218,7 +218,7 @@ class Pauli(BasePauli):
             return front + "..."
         return self.to_label()
 
-    def __array__(self, dtype=None):
+    def __array__(self, dtype=None) -> np.ndarray:
         if dtype:
             return np.asarray(self.to_matrix(), dtype=dtype)
         return self.to_matrix()
@@ -283,7 +283,7 @@ class Pauli(BasePauli):
         return self._x[0]
 
     @x.setter
-    def x(self, val):
+    def x(self, val) -> None:
         self._x[0, :] = val
 
     @property
@@ -299,25 +299,25 @@ class Pauli(BasePauli):
     # Pauli Array methods
     # ---------------------------------------------------------------------
 
-    def __len__(self):
+    def __len__(self) -> int:
         """Return the number of qubits in the Pauli."""
         return self.num_qubits
 
-    def __getitem__(self, qubits):
+    def __getitem__(self, qubits) -> Pauli:
         """Return the unsigned Pauli group Pauli for subset of qubits."""
         # Set group phase to 0 so returned Pauli is always +1 coeff
         if isinstance(qubits, (int, np.integer)):
             qubits = [qubits]
         return Pauli((self.z[qubits], self.x[qubits]))
 
-    def __setitem__(self, qubits, value):
+    def __setitem__(self, qubits, value) -> None:
         """Update the Pauli for a subset of qubits."""
         if not isinstance(value, Pauli):
             value = Pauli(value)
         self._z[0, qubits] = value.z
         self._x[0, qubits] = value.x
         # Add extra phase from new Pauli to current
-        self._phase = self._phase + value._phase
+        self._phase: np.ndarray = self._phase + value._phase
 
     def delete(self, qubits: int | list) -> Pauli:
         """Return a Pauli with qubits deleted.
@@ -420,7 +420,7 @@ class Pauli(BasePauli):
         """
         return self._to_matrix(self.z, self.x, self._phase[0], sparse=sparse)
 
-    def to_instruction(self):
+    def to_instruction(self) -> Instruction:
         """Convert to Pauli circuit instruction."""
         from math import pi
 
@@ -506,16 +506,16 @@ class Pauli(BasePauli):
     def _multiply(self, other):
         return Pauli(super()._multiply(other))
 
-    def conjugate(self):
+    def conjugate(self) -> Pauli:
         return Pauli(super().conjugate())
 
-    def transpose(self):
+    def transpose(self) -> Pauli:
         return Pauli(super().transpose())
 
-    def adjoint(self):
+    def adjoint(self) -> Pauli:
         return Pauli(super().adjoint())
 
-    def inverse(self):
+    def inverse(self) -> Pauli:
         """Return the inverse of the Pauli."""
         return Pauli(super().adjoint())
 

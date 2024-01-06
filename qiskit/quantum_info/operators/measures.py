@@ -398,7 +398,7 @@ def _input_formatter(obj, fallback_class, func_name, arg_name):
     return fallback_class(obj)
 
 
-def _cp_condition(channel):
+def _cp_condition(channel) -> np.ndarray:
     """Return Choi-matrix eigenvalues for checking if channel is CP"""
     if isinstance(channel, QuantumChannel):
         if not isinstance(channel, Choi):
@@ -408,7 +408,7 @@ def _cp_condition(channel):
     return np.tensordot(unitary, unitary.conj(), axes=([0, 1], [0, 1])).real
 
 
-def _tp_condition(channel):
+def _tp_condition(channel) -> np.ndarray:
     """Return partial tr Choi-matrix eigenvalues for checking if channel is TP"""
     if isinstance(channel, QuantumChannel):
         if not isinstance(channel, Choi):

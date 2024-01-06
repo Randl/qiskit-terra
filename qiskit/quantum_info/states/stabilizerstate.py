@@ -15,6 +15,9 @@ Stabilizer state class.
 """
 
 from __future__ import annotations
+
+from collections.abc import Sequence
+
 import numpy as np
 
 from qiskit.exceptions import QiskitError
@@ -91,8 +94,8 @@ class StabilizerState(QuantumState):
         # Initialize
         super().__init__(op_shape=OpShape.auto(num_qubits_r=self._data.num_qubits, num_qubits_l=0))
 
-    def __eq__(self, other):
-        return (self._data.stab == other._data.stab).all()
+    def __eq__(self, other: object):
+        return isinstance(other, StabilizerState) and (self._data.stab == other._data.stab).all()
 
     def __repr__(self):
         return f"StabilizerState({self._data.to_labels(mode='S')})"
@@ -102,7 +105,7 @@ class StabilizerState(QuantumState):
         """Return StabilizerState Clifford data"""
         return self._data
 
-    def is_valid(self, atol=None, rtol=None):
+    def is_valid(self, atol=None, rtol=None) -> bool:
         """Return True if a valid StabilizerState."""
         return self._data.is_unitary()
 
@@ -369,7 +372,7 @@ class StabilizerState(QuantumState):
 
         outcome = ["X"] * len(qubits)
         outcome_prob = 1.0
-        probs = {}  # probabilities dictionary
+        probs: dict[str, float] = {}  # probabilities dictionary
 
         self._get_probablities(qubits, outcome, outcome_prob, probs)
 
@@ -556,7 +559,7 @@ class StabilizerState(QuantumState):
         return accum_pauli, accum_phase
 
     @staticmethod
-    def _rowsum_nondeterministic(clifford, accum, row):
+    def _rowsum_nondeterministic(clifford, accum, row) -> None:
         """Updating StabilizerState Clifford in the
         non-deterministic rowsum calculation.
         row and accum are rows in the StabilizerState Clifford."""
@@ -600,7 +603,9 @@ class StabilizerState(QuantumState):
     # -----------------------------------------------------------------------
     # Helper functions for calculating the probabilities
     # -----------------------------------------------------------------------
-    def _get_probablities(self, qubits, outcome, outcome_prob, probs):
+    def _get_probablities(
+        self, qubits, outcome: Sequence[str], outcome_prob: float, probs: dict[str, float]
+    ) -> None:
         """Recursive helper function for calculating the probabilities"""
 
         qubit_for_branching = -1

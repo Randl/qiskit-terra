@@ -17,6 +17,7 @@ Abstract BaseOperator class.
 from __future__ import annotations
 import copy
 from abc import ABC
+from collections.abc import Sequence
 
 from qiskit.exceptions import QiskitError
 from qiskit.quantum_info.operators.op_shape import OpShape
@@ -50,7 +51,7 @@ class BaseOperator(GroupMixin, ABC):
             If `op_shape`` is specified it will take precedence over other
             kwargs.
         """
-        self._qargs = None
+        self._qargs: tuple | None = None
         if op_shape:
             self._op_shape = op_shape
         else:
@@ -61,7 +62,7 @@ class BaseOperator(GroupMixin, ABC):
     # Set higher priority than Numpy array and matrix classes
     __array_priority__ = 20
 
-    def __call__(self, *qargs):
+    def __call__(self, *qargs: int | Sequence[int]):
         """Return a shallow copy with qargs attribute set"""
         if len(qargs) == 1 and isinstance(qargs[0], (tuple, list)):
             qargs = qargs[0]

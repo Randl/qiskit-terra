@@ -255,7 +255,7 @@ def _choi_to_kraus(data, input_dim, output_dim, atol=ATOL_DEFAULT):
 
 def _stinespring_to_kraus(data, output_dim):
     """Transform Stinespring representation to Kraus representation."""
-    kraus_pair = []
+    kraus_pair: list[list[np.ndarray] | None] = []
     for stine in data:
         if stine is None:
             kraus_pair.append(None)

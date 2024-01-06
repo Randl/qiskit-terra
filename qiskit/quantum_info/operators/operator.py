@@ -18,8 +18,9 @@ from __future__ import annotations
 
 import copy
 import re
+from collections.abc import Sequence
 from numbers import Number
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 import numpy as np
 
@@ -59,8 +60,8 @@ class Operator(LinearOp):
     def __init__(
         self,
         data: QuantumCircuit | Operation | BaseOperator | np.ndarray,
-        input_dims: tuple | None = None,
-        output_dims: tuple | None = None,
+        input_dims: tuple | int | None = None,
+        output_dims: tuple | int | None = None,
     ):
         """Initialize an operator object.
 
@@ -117,12 +118,12 @@ class Operator(LinearOp):
             shape=self._data.shape,
         )
 
-    def __array__(self, dtype=None):
+    def __array__(self, dtype=None) -> np.ndarray:
         if dtype:
             return np.asarray(self.data, dtype=dtype)
         return self.data
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         prefix = "Operator("
         pad = len(prefix) * " "
         return "{}{},\n{}input_dims={}, output_dims={})".format(
@@ -140,12 +141,12 @@ class Operator(LinearOp):
         return np.allclose(self.data, other.data, rtol=self.rtol, atol=self.atol)
 
     @property
-    def data(self):
+    def data(self) -> np.ndarray:
         """The underlying Numpy array."""
         return self._data
 
     @property
-    def settings(self):
+    def settings(self) -> dict[str, Any]:
         """Return operator settings."""
         return {
             "data": self._data,
@@ -208,7 +209,7 @@ class Operator(LinearOp):
             Please choose from: 'text', 'latex', or 'latex_source'."""
             )
 
-    def _ipython_display_(self):
+    def _ipython_display_(self) -> None:
         out = self.draw()
         if isinstance(out, str):
             print(out)
@@ -458,7 +459,9 @@ class Operator(LinearOp):
         ret._op_shape = self._op_shape.transpose()
         return ret
 
-    def compose(self, other: Operator, qargs: list | None = None, front: bool = False) -> Operator:
+    def compose(
+        self, other: Operator, qargs: Sequence | None = None, front: bool = False
+    ) -> Operator:
         if qargs is None:
             qargs = getattr(other, "qargs", None)
         if not isinstance(other, Operator):
@@ -544,7 +547,7 @@ class Operator(LinearOp):
         ret._data = np.kron(a.data, b.data)
         return ret
 
-    def _add(self, other, qargs=None):
+    def _add(self, other, qargs=None) -> Operator:
         """Return the operator self + other.
 
         If ``qargs`` are specified the other operator will be added
@@ -578,7 +581,7 @@ class Operator(LinearOp):
         ret._data = self.data + other.data
         return ret
 
-    def _multiply(self, other):
+    def _multiply(self, other: complex) -> Operator:
         """Return the operator self * other.
 
         Args:
@@ -647,7 +650,14 @@ class Operator(LinearOp):
         return self.data
 
     @classmethod
-    def _einsum_matmul(cls, tensor, mat, indices, shift=0, right_mul=False):
+    def _einsum_matmul(
+        cls: np.ndarray,
+        tensor,
+        mat: np.ndarray,
+        indices: list[int],
+        shift: int = 0,
+        right_mul: bool = False,
+    ) -> np.ndarray:
         """Perform a contraction using Numpy.einsum
 
         Args:
@@ -697,7 +707,7 @@ class Operator(LinearOp):
         return op
 
     @classmethod
-    def _instruction_to_matrix(cls, obj):
+    def _instruction_to_matrix(cls, obj) -> np.ndarray:
         """Return Operator for instruction if defined or None otherwise."""
         # Note: to_matrix() is not a required method for Operations, so for now
         # we do not allow constructing matrices for general Operations.
@@ -720,7 +730,7 @@ class Operator(LinearOp):
                 pass
         return mat
 
-    def _append_instruction(self, obj, qargs=None):
+    def _append_instruction(self, obj, qargs=None) -> None:
         """Update the current Operator by apply an instruction."""
         from qiskit.circuit.barrier import Barrier
         from .scalar_op import ScalarOp

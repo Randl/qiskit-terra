@@ -39,7 +39,7 @@ import numpy as np
 from .polytopes import ConvexPolytopeData, PolytopeData, manual_get_vertex, polytope_has_element
 
 
-def get_augmented_coordinate(target_coordinate, strengths):
+def get_augmented_coordinate(target_coordinate: list[float], strengths: list[float]) -> list[float]:
     """
     Assembles a coordinate in the system used by `xx_region_polytope`.
     """
@@ -79,7 +79,7 @@ def decomposition_hop(target_coordinate, strengths):
             (cpp for cpp in xx_lift_polytope.convex_subpolytopes if cpp.name == cp.name), None
         )
 
-        coefficient_dict = {}
+        coefficient_dict: dict[tuple, float] = {}
         for inequality in raw_convex_polytope.inequalities:
             if inequality[1] == 0 and inequality[2] == 0:
                 continue

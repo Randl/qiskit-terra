@@ -16,6 +16,7 @@ Superoperator representation of a Quantum Channel."""
 from __future__ import annotations
 
 import copy
+from collections.abc import Sequence
 from typing import TYPE_CHECKING
 
 import numpy as np
@@ -61,8 +62,8 @@ class SuperOp(QuantumChannel):
     def __init__(
         self,
         data: QuantumCircuit | Instruction | BaseOperator | np.ndarray,
-        input_dims: tuple | None = None,
-        output_dims: tuple | None = None,
+        input_dims: Sequence | None = None,
+        output_dims: Sequence | None = None,
     ):
         """Initialize a quantum channel Superoperator operator.
 

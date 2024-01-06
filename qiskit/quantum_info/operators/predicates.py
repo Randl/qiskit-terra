@@ -93,7 +93,7 @@ def is_diagonal_matrix(mat, rtol=RTOL_DEFAULT, atol=ATOL_DEFAULT):
     return np.allclose(mat, np.diag(np.diagonal(mat)), rtol=rtol, atol=atol)
 
 
-def is_symmetric_matrix(op, rtol=RTOL_DEFAULT, atol=ATOL_DEFAULT):
+def is_symmetric_matrix(op, rtol: float = RTOL_DEFAULT, atol: float = ATOL_DEFAULT) -> bool:
     """Test if an array is a symmetric matrix"""
     if atol is None:
         atol = ATOL_DEFAULT
@@ -105,7 +105,7 @@ def is_symmetric_matrix(op, rtol=RTOL_DEFAULT, atol=ATOL_DEFAULT):
     return np.allclose(mat, mat.T, rtol=rtol, atol=atol)
 
 
-def is_hermitian_matrix(mat, rtol=RTOL_DEFAULT, atol=ATOL_DEFAULT):
+def is_hermitian_matrix(mat, rtol: float = RTOL_DEFAULT, atol: float = ATOL_DEFAULT) -> bool:
     """Test if an array is a Hermitian matrix"""
     if atol is None:
         atol = ATOL_DEFAULT
@@ -117,7 +117,9 @@ def is_hermitian_matrix(mat, rtol=RTOL_DEFAULT, atol=ATOL_DEFAULT):
     return np.allclose(mat, np.conj(mat.T), rtol=rtol, atol=atol)
 
 
-def is_positive_semidefinite_matrix(mat, rtol=RTOL_DEFAULT, atol=ATOL_DEFAULT):
+def is_positive_semidefinite_matrix(
+    mat, rtol: float = RTOL_DEFAULT, atol: float = ATOL_DEFAULT
+) -> bool:
     """Test if a matrix is positive semidefinite"""
     if atol is None:
         atol = ATOL_DEFAULT
@@ -133,7 +135,9 @@ def is_positive_semidefinite_matrix(mat, rtol=RTOL_DEFAULT, atol=ATOL_DEFAULT):
     return True
 
 
-def is_identity_matrix(mat, ignore_phase=False, rtol=RTOL_DEFAULT, atol=ATOL_DEFAULT):
+def is_identity_matrix(
+    mat, ignore_phase: bool = False, rtol: float = RTOL_DEFAULT, atol: float = ATOL_DEFAULT
+) -> bool:
     """Test if an array is an identity matrix."""
     if atol is None:
         atol = ATOL_DEFAULT
@@ -153,7 +157,7 @@ def is_identity_matrix(mat, ignore_phase=False, rtol=RTOL_DEFAULT, atol=ATOL_DEF
     return np.allclose(mat, iden, rtol=rtol, atol=atol)
 
 
-def is_unitary_matrix(mat, rtol=RTOL_DEFAULT, atol=ATOL_DEFAULT):
+def is_unitary_matrix(mat, rtol: float = RTOL_DEFAULT, atol: float = ATOL_DEFAULT) -> bool:
     """Test if an array is a unitary matrix."""
     mat = np.array(mat)
     # Compute A^dagger.A and see if it is identity matrix
@@ -161,7 +165,7 @@ def is_unitary_matrix(mat, rtol=RTOL_DEFAULT, atol=ATOL_DEFAULT):
     return is_identity_matrix(mat, ignore_phase=False, rtol=rtol, atol=atol)
 
 
-def is_isometry(mat, rtol=RTOL_DEFAULT, atol=ATOL_DEFAULT):
+def is_isometry(mat, rtol: float = RTOL_DEFAULT, atol: float = ATOL_DEFAULT) -> bool:
     """Test if an array is an isometry."""
     mat = np.array(mat)
     # Compute A^dagger.A and see if it is identity matrix

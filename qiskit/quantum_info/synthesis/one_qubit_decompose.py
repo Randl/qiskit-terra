@@ -32,6 +32,7 @@ from qiskit.circuit.library.standard_gates import (
     SXGate,
     XGate,
 )
+from qiskit.dagcircuit import DAGCircuit
 from qiskit.exceptions import QiskitError
 from qiskit.quantum_info.operators.predicates import is_unitary_matrix
 from qiskit.circuit.gate import Gate
@@ -148,7 +149,7 @@ class OneQubitEulerDecomposer:
         self.basis = basis  # sets: self._basis, self._params, self._circuit
         self.use_dag = use_dag
 
-    def build_circuit(self, gates, global_phase):
+    def build_circuit(self, gates, global_phase) -> DAGCircuit | QuantumCircuit:
         """Return the circuit or dag object from a list of gates."""
         qr = [Qubit()]
         lookup_gate = False
@@ -217,7 +218,9 @@ class OneQubitEulerDecomposer:
             raise QiskitError("OneQubitEulerDecomposer: input matrix is not unitary.")
         return self._decompose(unitary, simplify=simplify, atol=atol)
 
-    def _decompose(self, unitary, simplify=True, atol=DEFAULT_ATOL):
+    def _decompose(
+        self, unitary, simplify: bool = True, atol: float = DEFAULT_ATOL
+    ) -> QuantumCircuit:
         circuit_sequence = euler_one_qubit_decomposer.unitary_to_gate_sequence(
             unitary, [self.basis], 0, None, simplify, atol
         )
@@ -225,12 +228,12 @@ class OneQubitEulerDecomposer:
         return circuit
 
     @property
-    def basis(self):
+    def basis(self) -> str:
         """The decomposition basis."""
         return self._basis
 
     @basis.setter
-    def basis(self, basis):
+    def basis(self, basis: str) -> None:
         """Set the decomposition basis."""
         basis_methods = {
             "U321": self._params_u3,

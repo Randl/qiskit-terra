@@ -14,7 +14,7 @@ N-Qubit Sparse Pauli Operator class.
 """
 
 from __future__ import annotations
-from typing import TYPE_CHECKING, List
+from typing import Optional, TYPE_CHECKING, List
 
 from collections import defaultdict
 from collections.abc import Mapping, Sequence, Iterable
@@ -150,7 +150,7 @@ class SparsePauliOp(LinearOp):
             # Fast path used in copy operations, where the phase of the PauliList is already known
             # to be zero.  This path only works if the input data is compatible with the internal
             # ZX-phase convention.
-            self._pauli_list = pauli_list
+            self._pauli_list: PauliList = pauli_list
             self._coeffs = coeffs
         else:
             # move the phase of `pauli_list` to `self._coeffs`
@@ -224,7 +224,7 @@ class SparsePauliOp(LinearOp):
 
     @property
     def size(self):
-        """The number of Pauli of Pauli terms in the operator."""
+        """The number of Pauli terms in the operator."""
         return self._pauli_list.size
 
     def __len__(self):
@@ -232,7 +232,7 @@ class SparsePauliOp(LinearOp):
         return self.size
 
     @property
-    def paulis(self):
+    def paulis(self) -> PauliList:
         """Return the PauliList."""
         return self._pauli_list
 
@@ -256,11 +256,11 @@ class SparsePauliOp(LinearOp):
         return self._coeffs
 
     @coeffs.setter
-    def coeffs(self, value):
+    def coeffs(self, value) -> None:
         """Set Pauli coefficients."""
         self._coeffs[:] = value
 
-    def __getitem__(self, key):
+    def __getitem__(self, key) -> SparsePauliOp:
         """Return a view of the SparsePauliOp."""
         # Returns a view of specified rows of the PauliList
         # This supports all slicing operations the underlying array supports.
@@ -280,7 +280,7 @@ class SparsePauliOp(LinearOp):
     # LinearOp Methods
     # ---------------------------------------------------------------------
 
-    def conjugate(self):
+    def conjugate(self) -> SparsePauliOp:
         # Conjugation conjugates phases and also Y.conj() = -Y
         # Hence we need to multiply conjugated coeffs by -1
         # for rows with an odd number of Y terms.
@@ -289,7 +289,7 @@ class SparsePauliOp(LinearOp):
         ret._coeffs = ret._coeffs.conj()
         return ret
 
-    def transpose(self):
+    def transpose(self) -> SparsePauliOp:
         # The only effect transposition has is Y.T = -Y
         # Hence we need to multiply coeffs by -1 for rows with an
         # odd number of Y terms.
@@ -298,7 +298,7 @@ class SparsePauliOp(LinearOp):
         ret._coeffs *= minus
         return ret
 
-    def adjoint(self):
+    def adjoint(self) -> SparsePauliOp:
         # Pauli's are self adjoint, so we only need to
         # conjugate the phases
         ret = self.copy()
@@ -374,7 +374,7 @@ class SparsePauliOp(LinearOp):
         coeffs = np.kron(a.coeffs, b.coeffs)
         return SparsePauliOp(paulis, coeffs, ignore_pauli_phase=True, copy=False)
 
-    def _add(self, other, qargs=None):
+    def _add(self, other, qargs=None) -> SparsePauliOp:
         if qargs is None:
             qargs = getattr(other, "qargs", None)
 
@@ -387,7 +387,7 @@ class SparsePauliOp(LinearOp):
         coeffs = np.hstack((self.coeffs, other.coeffs))
         return SparsePauliOp(paulis, coeffs, ignore_pauli_phase=True, copy=False)
 
-    def _multiply(self, other):
+    def _multiply(self, other) -> SparsePauliOp:
         if not isinstance(other, (Number, ParameterExpression)):
             raise QiskitError("other is neither a Number nor a Parameter/ParameterExpression")
         if other == 0:
@@ -777,7 +777,10 @@ class SparsePauliOp(LinearOp):
 
     @staticmethod
     def from_list(
-        obj: Iterable[tuple[str, complex]], dtype: type = complex, *, num_qubits: int = None
+        obj: Iterable[tuple[str, complex]],
+        dtype: type = complex,
+        *,
+        num_qubits: Optional[int] = None,
     ) -> SparsePauliOp:
         """Construct from a list of Pauli strings and coefficients.
 
@@ -969,7 +972,7 @@ class SparsePauliOp(LinearOp):
         class LabelIterator(CustomIterator):
             """Label representation iteration and item access."""
 
-            def __repr__(self):
+            def __repr__(self) -> str:
                 return f"<SparsePauliOp_label_iterator at {hex(id(self))}>"
 
             def __getitem__(self, key):
@@ -979,7 +982,7 @@ class SparsePauliOp(LinearOp):
 
         return LabelIterator(self)
 
-    def matrix_iter(self, sparse: bool = False):
+    def matrix_iter(self, sparse: bool = False) -> CustomIterator:
         """Return a matrix representation iterator.
 
         This is a lazy iterator that converts each term in the SparsePauliOp
@@ -998,7 +1001,7 @@ class SparsePauliOp(LinearOp):
         class MatrixIterator(CustomIterator):
             """Matrix representation iteration and item access."""
 
-            def __repr__(self):
+            def __repr__(self) -> str:
                 return f"<SparsePauliOp_matrix_iterator at {hex(id(self))}>"
 
             def __getitem__(self, key):

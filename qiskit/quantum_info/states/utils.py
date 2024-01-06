@@ -101,17 +101,17 @@ def shannon_entropy(pvec: list | np.ndarray, base: int = 2) -> float:
     """
     if base == 2:
 
-        def logfn(x):
+        def logfn(x: float) -> float:
             return -x * np.log2(x)
 
     elif base == np.e:
 
-        def logfn(x):
+        def logfn(x: float) -> float:
             return -x * np.log(x)
 
     else:
 
-        def logfn(x):
+        def logfn(x: float) -> float:
             return -x * np.log(x) / np.log(base)
 
     h_val = 0.0
@@ -121,7 +121,9 @@ def shannon_entropy(pvec: list | np.ndarray, base: int = 2) -> float:
     return h_val
 
 
-def schmidt_decomposition(state, qargs):
+def schmidt_decomposition(
+    state: Statevector | DensityMatrix, qargs
+) -> list[tuple[float, Statevector, Statevector]]:
     r"""Return the Schmidt Decomposition of a pure quantum state.
 
     For an arbitrary bipartite state:
@@ -206,7 +208,9 @@ def schmidt_decomposition(state, qargs):
     return schmidt_components
 
 
-def _format_state(state, validate=True):
+def _format_state(
+    state: list | np.ndarray | Statevector | DensityMatrix, validate: bool = True
+) -> Statevector | DensityMatrix:
     """Format input state into class object"""
     if isinstance(state, list):
         state = np.array(state, dtype=complex)

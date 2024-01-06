@@ -394,7 +394,7 @@ class Z2Symmetries:
         spo = spo.chop(self.tol)
         return spo
 
-    def __eq__(self, other: Z2Symmetries) -> bool:
+    def __eq__(self, other: object) -> bool:
         """
         Overload `==` operation to evaluate equality between Z2Symmetries.
 

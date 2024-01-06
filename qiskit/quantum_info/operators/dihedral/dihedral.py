@@ -23,7 +23,7 @@ from qiskit.quantum_info.operators.operator import Operator
 from qiskit.quantum_info.operators.symplectic.pauli import Pauli
 from qiskit.quantum_info.operators.scalar_op import ScalarOp
 from qiskit.quantum_info.operators.mixins import generate_apidocs, AdjointMixin
-from qiskit.circuit import QuantumCircuit, Instruction
+from qiskit.circuit import QuantumCircuit, Instruction, Gate
 from .dihedral_circuits import _append_circuit
 from .polynomial import SpecialPolynomial
 
@@ -175,21 +175,21 @@ class CNOTDihedral(BaseOperator, AdjointMixin):
             raise QiskitError("Invalid CNOTDihedral element.")
 
     @property
-    def name(self):
+    def name(self) -> str:
         """Unique string identifier for operation type."""
         return "cnotdihedral"
 
     @property
-    def num_clbits(self):
+    def num_clbits(self) -> int:
         """Number of classical bits."""
         return 0
 
-    def _z2matmul(self, left, right):
+    def _z2matmul(self, left: np.ndarray, right: np.ndarray) -> np.ndarray:
         """Compute product of two n x n z2 matrices."""
         prod = np.mod(np.dot(left, right), 2)
         return prod
 
-    def _z2matvecmul(self, mat, vec):
+    def _z2matvecmul(self, mat: np.ndarray, vec: np.ndarray) -> np.ndarray:
         """Compute mat*vec of n x n z2 matrix and vector."""
         prod = np.mod(np.dot(mat, vec), 2)
         return prod
@@ -249,7 +249,7 @@ class CNOTDihedral(BaseOperator, AdjointMixin):
             and (self.shift == other.shift).all()
         )
 
-    def _append_cx(self, i, j):
+    def _append_cx(self, i, j) -> None:
         """Apply a CX gate to this element.
         Left multiply the element by CX(i, j).
         """
@@ -259,7 +259,7 @@ class CNOTDihedral(BaseOperator, AdjointMixin):
         self.linear[j] = (self.linear[i] + self.linear[j]) % 2
         self.shift[j] = (self.shift[i] + self.shift[j]) % 2
 
-    def _append_phase(self, k, i):
+    def _append_phase(self, k, i: int) -> None:
         """Apply an k-th power of T to this element.
         Left multiply the element by T_i^k.
         """
@@ -284,7 +284,7 @@ class CNOTDihedral(BaseOperator, AdjointMixin):
             value = self.poly.get_term(list(j))
             self.poly.set_term(list(j), (value + 4 * k) % 8)
 
-    def _append_x(self, i):
+    def _append_x(self, i) -> None:
         """Apply X to this element.
         Left multiply the element by X(i).
         """
@@ -292,7 +292,7 @@ class CNOTDihedral(BaseOperator, AdjointMixin):
             raise QiskitError("X qubit out of bounds.")
         self.shift[i] = (self.shift[i] + 1) % 2
 
-    def __str__(self):
+    def __str__(self) -> str:
         """Return formatted string representation."""
         out = "phase polynomial = \n"
         out += str(self.poly)
@@ -314,7 +314,7 @@ class CNOTDihedral(BaseOperator, AdjointMixin):
         out += ")\n"
         return out
 
-    def to_circuit(self):
+    def to_circuit(self) -> QuantumCircuit:
         """Return a QuantumCircuit implementing the CNOT-Dihedral element.
 
         Return:
@@ -332,11 +332,11 @@ class CNOTDihedral(BaseOperator, AdjointMixin):
 
         return synth_cnotdihedral_full(self)
 
-    def to_instruction(self):
+    def to_instruction(self) -> Gate:
         """Return a Gate instruction implementing the CNOTDihedral object."""
         return self.to_circuit().to_gate()
 
-    def _from_circuit(self, circuit):
+    def _from_circuit(self, circuit: QuantumCircuit | Instruction) -> CNOTDihedral:
         """Initialize from a QuantumCircuit or Instruction.
 
         Args:
@@ -356,12 +356,12 @@ class CNOTDihedral(BaseOperator, AdjointMixin):
         _append_circuit(elem, circuit)
         return elem
 
-    def __array__(self, dtype=None):
+    def __array__(self, dtype=None) -> np.ndarray:
         if dtype:
             return np.asarray(self.to_matrix(), dtype=dtype)
         return self.to_matrix()
 
-    def to_matrix(self):
+    def to_matrix(self) -> np.ndarray:
         """Convert operator to Numpy matrix."""
         return self.to_operator().data
 
@@ -383,7 +383,7 @@ class CNOTDihedral(BaseOperator, AdjointMixin):
         other.poly.weight_0 = 0  # set global phase
         return other
 
-    def _tensor(self, other, reverse=False):
+    def _tensor(self, other: CNOTDihedral, reverse: bool = False) -> CNOTDihedral:
         """Returns the tensor product operator."""
 
         if not isinstance(other, CNOTDihedral):

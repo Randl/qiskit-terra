@@ -73,7 +73,7 @@ class QuantumChannel(LinearOp):
             self.output_dims(),
         )
 
-    def __eq__(self, other: Self):
+    def __eq__(self, other: object) -> bool:
         """Test if two QuantumChannels are equal."""
         if not super().__eq__(other):
             return False

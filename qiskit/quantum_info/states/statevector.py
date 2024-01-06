@@ -103,17 +103,17 @@ class Statevector(QuantumState, TolerancesMixin):
                 raise QiskitError("Invalid input: not a vector or column-vector.")
         super().__init__(op_shape=OpShape.auto(shape=shape, dims_l=dims, num_qubits_r=0))
 
-    def __array__(self, dtype=None):
+    def __array__(self, dtype=None) -> np.ndarray:
         if dtype:
             return np.asarray(self.data, dtype=dtype)
         return self.data
 
-    def __eq__(self, other):
+    def __eq__(self, other) -> bool:
         return super().__eq__(other) and np.allclose(
             self._data, other._data, rtol=self.rtol, atol=self.atol
         )
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         prefix = "Statevector("
         pad = len(prefix) * " "
         return "{}{},\n{}dims={})".format(
@@ -187,7 +187,7 @@ class Statevector(QuantumState, TolerancesMixin):
 
         return state_drawer(self, output=output, **drawer_args)
 
-    def _ipython_display_(self):
+    def _ipython_display_(self) -> None:
         out = self.draw()
         if isinstance(out, str):
             print(out)
@@ -224,7 +224,7 @@ class Statevector(QuantumState, TolerancesMixin):
     def __iter__(self):
         yield from self._data
 
-    def __len__(self):
+    def __len__(self) -> int:
         return len(self._data)
 
     @property
@@ -342,7 +342,7 @@ class Statevector(QuantumState, TolerancesMixin):
         ret._data = self.data + other.data
         return ret
 
-    def _multiply(self, other):
+    def _multiply(self, other) -> Statevector:
         """Return the scalar multiplied state self * other.
 
         Args:
@@ -842,7 +842,7 @@ class Statevector(QuantumState, TolerancesMixin):
         )
 
     @staticmethod
-    def _evolve_operator(statevec, oper, qargs=None):
+    def _evolve_operator(statevec: Statevector, oper, qargs=None) -> Statevector:
         """Evolve a qudit statevector"""
         new_shape = statevec._op_shape.compose(oper._op_shape, qargs=qargs)
         if qargs is None:

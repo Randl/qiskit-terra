@@ -214,7 +214,7 @@ class ScalarOp(LinearOp):
         # final dimensions.
         return other.reshape(self.input_dims(), self.output_dims())._add(self)
 
-    def _multiply(self, other):
+    def _multiply(self, other) -> ScalarOp:
         """Return the ScalarOp other * self.
 
         Args:

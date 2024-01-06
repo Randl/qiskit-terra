@@ -187,7 +187,7 @@ class DensityMatrix(QuantumState, TolerancesMixin):
             display(out)
 
     @property
-    def data(self):
+    def data(self) -> np.ndarray:
         """Return data."""
         return self._data
 
@@ -211,7 +211,7 @@ class DensityMatrix(QuantumState, TolerancesMixin):
         dims = self.dims()
         return Operator(self.data, input_dims=dims, output_dims=dims)
 
-    def conjugate(self):
+    def conjugate(self) -> DensityMatrix:
         """Return the conjugate of the density matrix."""
         return DensityMatrix(np.conj(self.data), dims=self.dims())
 
@@ -265,7 +265,7 @@ class DensityMatrix(QuantumState, TolerancesMixin):
         ret._op_shape = self._op_shape.expand(other._op_shape)
         return ret
 
-    def _add(self, other):
+    def _add(self, other) -> DensityMatrix:
         """Return the linear combination self + other.
 
         Args:
@@ -285,7 +285,7 @@ class DensityMatrix(QuantumState, TolerancesMixin):
         ret._data = self.data + other.data
         return ret
 
-    def _multiply(self, other):
+    def _multiply(self, other: complex) -> DensityMatrix:
         """Return the scalar multiplied state other * self.
 
         Args:
@@ -366,7 +366,7 @@ class DensityMatrix(QuantumState, TolerancesMixin):
         ret._op_shape = self._op_shape.reverse()
         return ret
 
-    def _expectation_value_pauli(self, pauli, qargs=None):
+    def _expectation_value_pauli(self, pauli, qargs=None) -> complex:
         """Compute the expectation value of a Pauli.
 
         Args:
@@ -740,7 +740,7 @@ class DensityMatrix(QuantumState, TolerancesMixin):
         ret._op_shape = new_shape
         return ret
 
-    def _append_instruction(self, other, qargs=None):
+    def _append_instruction(self, other, qargs=None) -> None:
         """Update the current Statevector by applying an instruction."""
         from qiskit.circuit.reset import Reset
         from qiskit.circuit.barrier import Barrier

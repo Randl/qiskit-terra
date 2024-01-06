@@ -248,7 +248,9 @@ def xx_circuit_step(source, strength, target, embodiment):
     return {"prefix_circuit": prefix_circuit, "affix_circuit": affix_circuit}
 
 
-def canonical_xx_circuit(target, strength_sequence, basis_embodiments):
+def canonical_xx_circuit(
+    target, strength_sequence: list[float], basis_embodiments: dict[float, QuantumCircuit]
+) -> QuantumCircuit:
     """
     Assembles a Qiskit circuit from a specified `strength_sequence` of XX-type interactions which
     emulates the canonical gate at canonical coordinate `target`.  The circuits supplied by

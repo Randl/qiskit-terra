@@ -15,6 +15,7 @@ SpecialPolynomial class.
 
 from __future__ import annotations
 import itertools
+from collections.abc import Sequence
 from itertools import combinations
 import copy
 from functools import reduce
@@ -30,7 +31,7 @@ class SpecialPolynomial:
     Maximum degree 3, n Z_2 variables, coefficients in Z_8.
     """
 
-    def __init__(self, n_vars):
+    def __init__(self, n_vars: int):
         """Construct the zero polynomial on n_vars variables."""
         #   1 constant term
         #   n linear terms x_1, ..., x_n
@@ -47,7 +48,7 @@ class SpecialPolynomial:
         self.weight_2 = np.zeros(self.nc2, dtype=np.int8)
         self.weight_3 = np.zeros(self.nc3, dtype=np.int8)
 
-    def mul_monomial(self, indices):
+    def mul_monomial(self, indices: Sequence[int]):
         """Multiply by a monomial given by indices.
 
         Returns the product.
@@ -64,7 +65,7 @@ class SpecialPolynomial:
         if length == 0:
             result = copy.deepcopy(self)
         else:
-            terms0 = [[]]
+            terms0: list[list[int]] = [[]]
             terms1 = list(combinations(range(self.n_vars), r=1))
             terms2 = list(combinations(range(self.n_vars), r=2))
             terms3 = list(combinations(range(self.n_vars), r=3))
@@ -74,7 +75,7 @@ class SpecialPolynomial:
                 result.set_term(new_term, (result.get_term(new_term) + value) % 8)
         return result
 
-    def __mul__(self, other):
+    def __mul__(self, other: SpecialPolynomial | int) -> SpecialPolynomial:
         """Multiply two polynomials."""
         if not isinstance(other, SpecialPolynomial):
             other = int(other)
@@ -87,7 +88,7 @@ class SpecialPolynomial:
         else:
             if self.n_vars != other.n_vars:
                 raise QiskitError("Multiplication on different n_vars.")
-            terms0 = [[]]
+            terms0: list[list[int]] = [[]]
             terms1 = list(combinations(range(self.n_vars), r=1))
             terms2 = list(combinations(range(self.n_vars), r=2))
             terms3 = list(combinations(range(self.n_vars), r=3))
@@ -100,14 +101,14 @@ class SpecialPolynomial:
                     result = result + temp
         return result
 
-    def __rmul__(self, other):
+    def __rmul__(self, other: SpecialPolynomial | int):
         """Right multiplication.
 
         This operation is commutative.
         """
         return self.__mul__(other)
 
-    def __add__(self, other):
+    def __add__(self, other: object):
         """Add two polynomials."""
         if not isinstance(other, SpecialPolynomial):
             raise QiskitError("Element to add is not a SpecialPolynomial.")
@@ -120,7 +121,7 @@ class SpecialPolynomial:
         result.weight_3 = (self.weight_3 + other.weight_3) % 8
         return result
 
-    def evaluate(self, xval):
+    def evaluate(self, xval: list[int] | list[SpecialPolynomial]):
         """Evaluate the multinomial at xval.
 
         if xval is a length n z2 vector, return element of Z8.
@@ -140,7 +141,7 @@ class SpecialPolynomial:
         else:
             xval = xval % 2
         # Examine each term of this polynomial
-        terms0 = [[]]
+        terms0: list[list[int]] = [[]]
         terms1 = list(combinations(range(self.n_vars), r=1))
         terms2 = list(combinations(range(self.n_vars), r=2))
         terms3 = list(combinations(range(self.n_vars), r=3))
@@ -162,7 +163,7 @@ class SpecialPolynomial:
             result = result % 8
         return result
 
-    def set_pj(self, indices):
+    def set_pj(self, indices: Sequence[int]):
         """Set to special form polynomial on subset of variables.
 
         p_J(x) := sum_{a subseteq J,|a| neq 0} (-2)^{|a|-1}x^a
@@ -174,9 +175,9 @@ class SpecialPolynomial:
         subsets_2 = itertools.combinations(indices, 2)
         subsets_3 = itertools.combinations(indices, 3)
         self.weight_0 = 0
-        self.weight_1 = np.zeros(self.n_vars)
-        self.weight_2 = np.zeros(self.nc2)
-        self.weight_3 = np.zeros(self.nc3)
+        self.weight_1 = np.zeros(self.n_vars, dtype=np.int8)
+        self.weight_2 = np.zeros(self.nc2, dtype=np.int8)
+        self.weight_3 = np.zeros(self.nc3, dtype=np.int8)
         for j in indices:
             self.set_term([j], 1)
         for j in subsets_2:
@@ -184,7 +185,7 @@ class SpecialPolynomial:
         for j in subsets_3:
             self.set_term(list(j), 4)
 
-    def get_term(self, indices):
+    def get_term(self, indices: Sequence[int]) -> int:
         """Get the value of a term given the list of variables.
 
         Example: indices = [] returns the constant
@@ -227,7 +228,7 @@ class SpecialPolynomial:
 
         return self.weight_3[offset]
 
-    def set_term(self, indices, value):
+    def set_term(self, indices: Sequence[int], value: int):
         """Set the value of a term given the list of variables.
 
         Example: indices = [] returns the constant
@@ -279,7 +280,7 @@ class SpecialPolynomial:
         tup = (self.weight_0, tuple(self.weight_1), tuple(self.weight_2), tuple(self.weight_3))
         return tup
 
-    def __eq__(self, x):
+    def __eq__(self, x: object):
         """Test equality."""
         return isinstance(x, SpecialPolynomial) and self.key == x.key
 

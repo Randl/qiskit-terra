@@ -118,7 +118,7 @@ class XXPolytope:
     place_strength: float = 0.0
 
     @classmethod
-    def from_strengths(cls, *strengths):
+    def from_strengths(cls, *strengths) -> "XXPolytope":
         """
         Constructs an XXPolytope from a sequence of strengths.
         """
@@ -181,7 +181,7 @@ class XXPolytope:
             self._offsets + np.einsum("ij,...j->...i", A, reflected_point) >= -EPSILON, axis=-1
         )
 
-    def nearest(self, point):
+    def nearest(self, point: np.ndarray | list[float]) -> np.ndarray:
         """
         Finds the nearest point (in Euclidean or infidelity distance) to `self`.
         """

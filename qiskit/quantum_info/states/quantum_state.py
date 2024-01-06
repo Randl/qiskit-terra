@@ -43,26 +43,26 @@ class QuantumState:
         """
         self._op_shape = op_shape
         # RNG for measure functions
-        self._rng_generator = None
+        self._rng_generator: np.random.Generator | None = None
 
     # Set higher priority than Numpy array and matrix classes
     __array_priority__ = 20
 
-    def __eq__(self, other):
+    def __eq__(self, other) -> bool:
         return isinstance(other, self.__class__) and self.dims() == other.dims()
 
     @property
-    def dim(self):
+    def dim(self) -> int:
         """Return total state dimension."""
         return self._op_shape.shape[0]
 
     @property
-    def num_qubits(self):
+    def num_qubits(self) -> int:
         """Return the number of qubits if a N-qubit state or None otherwise."""
         return self._op_shape.num_qubits
 
     @property
-    def _rng(self):
+    def _rng(self) -> np.random.Generator:
         if self._rng_generator is None:
             return np.random.default_rng()
         return self._rng_generator
@@ -75,7 +75,7 @@ class QuantumState:
         """Make a copy of current operator."""
         return copy.deepcopy(self)
 
-    def seed(self, value=None):
+    def seed(self, value=None) -> None:
         """Set the seed for the quantum state RNG."""
         if value is None:
             self._rng_generator = None
@@ -139,7 +139,7 @@ class QuantumState:
         """
         pass
 
-    def _add(self, other):
+    def _add(self, other: QuantumState) -> QuantumState:
         """Return the linear combination self + other.
 
         Args:
@@ -153,7 +153,7 @@ class QuantumState:
         """
         raise NotImplementedError(f"{type(self)} does not support addition")
 
-    def _multiply(self, other):
+    def _multiply(self, other: complex) -> QuantumState:
         """Return the scalar multipled state other * self.
 
         Args:
@@ -478,26 +478,26 @@ class QuantumState:
         return new_probs
 
     # Overloads
-    def __and__(self, other):
+    def __and__(self, other) -> QuantumState:
         return self.evolve(other)
 
-    def __xor__(self, other):
+    def __xor__(self, other) -> QuantumState:
         return self.tensor(other)
 
-    def __mul__(self, other):
+    def __mul__(self, other) -> QuantumState:
         return self._multiply(other)
 
-    def __truediv__(self, other):
+    def __truediv__(self, other) -> QuantumState:
         return self._multiply(1 / other)
 
-    def __rmul__(self, other):
+    def __rmul__(self, other) -> QuantumState:
         return self.__mul__(other)
 
-    def __add__(self, other):
+    def __add__(self, other) -> QuantumState:
         return self._add(other)
 
-    def __sub__(self, other):
+    def __sub__(self, other) -> QuantumState:
         return self._add(-other)
 
-    def __neg__(self):
+    def __neg__(self) -> QuantumState:
         return self._multiply(-1)
