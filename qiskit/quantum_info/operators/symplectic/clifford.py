@@ -490,7 +490,7 @@ class Clifford(BaseOperator, AdjointMixin, Operation):
         return Clifford(data, validate=False, copy=False)
 
     @classmethod
-    def _compose_1q(cls, first, second) -> dict[tuple[bytes, bytes], Clifford]:
+    def _compose_1q(cls, first, second) -> Clifford:
         # 1-qubit composition can be done with a simple lookup table; there are 24 elements in the
         # 1q Clifford group, so 576 possible combinations, which is small enough to look up.
         if cls._COMPOSE_1Q_LOOKUP is None:

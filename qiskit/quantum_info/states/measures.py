@@ -214,9 +214,9 @@ def concurrence(state: Statevector | DensityMatrix) -> float:
     # If input is a density matrix it must be a 2-qubit state
     if state.dim != 4:
         raise QiskitError("Input density matrix must be a 2-qubit state.")
-    rho = DensityMatrix(state).data
+    rho_d = DensityMatrix(state).data
     yy_mat = np.fliplr(np.diag([-1, 1, 1, -1]))
-    sigma = rho.dot(yy_mat).dot(rho.conj()).dot(yy_mat)
+    sigma = rho_d.dot(yy_mat).dot(rho_d.conj()).dot(yy_mat)
     w = np.sort(np.real(la.eigvals(sigma)))
     w = np.sqrt(np.maximum(w, 0.0))
     return max(0.0, w[-1] - np.sum(w[0:-1]))

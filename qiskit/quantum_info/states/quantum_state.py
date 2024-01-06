@@ -48,7 +48,7 @@ class QuantumState:
     # Set higher priority than Numpy array and matrix classes
     __array_priority__ = 20
 
-    def __eq__(self, other) -> bool:
+    def __eq__(self, other: object) -> bool:
         return isinstance(other, self.__class__) and self.dims() == other.dims()
 
     @property
